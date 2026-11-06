@@ -50,8 +50,8 @@ def add(drive: Drive, name: str, phone: str, email: str, invoice_start: str, slu
     build_me_files(drive)
     build_client_lists(drive)
     print(f"Added {name} as coach {number:02d} (folder coach-{slug}/, code {code}).")
-    print(f"Next: share coach-{slug}/ with {email or 'their Google account'} as Contributor, and factory/ as Viewer "
-          "(setup/sharing-checklist.md).")
+    print(f"Next: share with {email or 'their Google account'}: coach-{slug}/ and factory/ as Viewer, and the coach's "
+          "invoice-lists/, invoices/ and pops/ as Contributor (setup/sharing-checklist.md).")
     print(f"Then paste this as the instruction of {name.split()[0]}'s Claude Project:\n\n{instruction(drive, slug)}")
     return 0
 
@@ -60,19 +60,22 @@ def instruction(drive: Drive, who: str) -> str:
     """The Project instruction for one person's Claude. It names who that Claude works for; the repo's CLAUDE.md
     then checks the name against what the account can open in the Shared Drive."""
     business = frontmatter(drive.factory / "business.txt").get("trading_name", "the business")
-    drive_name = drive.root.name
     head = frontmatter(drive.hub / "me.txt")
     if who == "head-coach":
-        return (f"You are the Claude for {head.get('name', 'the head coach')}, the head coach at {business}. "
-                f"You work in the \"{drive_name}\" Shared Drive: hub/ is yours, and your own coaching is in "
-                f"coach-{head.get('slug', '')}/. Read workspace/CLAUDE.md, in this project's knowledge, before anything else, and follow the head-coach role. "
-                "If you can't open hub/, stop and say so.")
+        return (f"You are the Claude for {head.get('name', 'the head coach')}, the head coach at {business}.\n\n"
+                "Structure: the repository in this project's knowledge. Read workspace/CLAUDE.md before anything else and "
+                "follow it, in the head-coach role. It is read-only.\n\n"
+                f"Data: the business's folder in Google Drive, the one holding hub/. Your own coaching is in coach-{head.get('slug', '')}/. "
+                "Use the Google Drive connector to find and read files and upload PDFs, Google Sheets for lists, and Google "
+                "Docs for documents. If you can't open hub/, stop and say so.")
     row = next((r for r in drive.coaches(active_only=False) if r["slug"] == who), None)
     if not row:
         raise SystemExit(f"No coach '{who}' in hub/coaches.")
-    return (f"You are the Claude for {row['name']}, coach {row['number']} at {business}. Your folder is "
-            f"coach-{row['slug']}/ in the \"{drive_name}\" Shared Drive. Read workspace/CLAUDE.md, in this project's knowledge, before anything else, and follow "
-            f"the coach role, working only in coach-{row['slug']}/ and factory/. If you can open hub/ or any other "
+    return (f"You are the Claude for {row['name']}, coach {row['number']} at {business}.\n\n"
+            "Structure: the repository in this project's knowledge. Read workspace/CLAUDE.md before anything else and "
+            "follow it, in the coach role. It is read-only.\n\n"
+            f"Data: coach-{row['slug']}/ and factory/ in Google Drive, shared with you. Use the Google Drive connector to find "
+            "and read files and upload PDFs, Google Sheets for lists, and Google Docs for documents. If you can open hub/ or any other "
             f"coach's folder, or coach-{row['slug']}/me doesn't name {row['name']}, coach {row['number']}, stop "
             f"and tell {row['name'].split()[0]} to alert the head coach.")
 

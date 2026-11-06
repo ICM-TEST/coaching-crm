@@ -44,7 +44,7 @@ Follow [../../../shared/connectors.md](../../../shared/connectors.md): read → 
 
 1. **Read.** `python3 scripts/issue.py --coach-dir coach-<slug> --needs` lists what to download into `work/`: this
    coach's `me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list and run Sheets,
-   the fonts, and the month's PDF folder (check it exists; make the same empty folder in `work/`).
+   the fonts (copied from the downloaded repo), and the month's PDF folder (check it exists; make the same empty folder in `work/`).
    Then `python3 scripts/sync.py snapshot work`.
 2. **Draft, dry run, issue** as above, with `--root work`.
 3. **Write.** `python3 scripts/sync.py plan work --role coach --coach coach-<slug>`. It lists: upload each PDF, create

@@ -360,7 +360,7 @@ def issue(run: dict) -> Path:
 NEEDS = ["{coach}/me  (Doc, as .txt)", "{coach}/clients  (Sheet, as .csv)", "{coach}/invoice-lists/*  (Sheets, as .csv)",
          "{coach}/unpaid  (Sheet, as .csv)",
          "factory/business  (Doc, as .txt)", "factory/billable-work  (Sheet, as .csv)",
-         "factory/invoicing-runs  (Sheet, as .csv)", "factory/invoice-template/fonts/*.ttf",
+         "factory/invoicing-runs  (Sheet, as .csv)", "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)",
          "{coach}/invoices/<month>/   (folder only: check it exists on the drive and make the same empty folder in the "
          "working copy; never create it on the drive)"]
 

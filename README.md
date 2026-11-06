@@ -30,13 +30,14 @@ account. This repo holds the **structure**. Each business's **data** lives in it
 
 ## Tests
 
-`python3 tools/tests/test_cycle.py` and `test_coaches.py` need only Python 3.10+. `test_issue.py`, `test_sync.py` and `test_updates.py` also need reportlab.
+`python3 tools/tests/test_cycle.py` and `test_coaches.py` need only Python 3.10+. `test_setup.py` and `test_release.py` too. `test_issue.py`, `test_sync.py` and `test_updates.py` also need reportlab.
 
 ## Status
 
 | Piece | State |
 |---|---|
 | Role maps and skills (head coach, coach) | drafted |
+| First-run setup (`workspace/setup/SKILL.md`) | written, plan rehearsed; not yet run in claude.ai |
 | `issue.py`: the invoice generator (a coach's two outputs) | built, tested; matches the business's own invoice, in Inter (included, trimmed, SIL OFL); ~40 KB per PDF; needs reportlab |
 | Drive templates: `.csv` = Google Sheet, `.txt` = Google Doc | drafted |
 | `sync.py`: working-copy changes → Google connector steps, with each role's limits | built, tested |

@@ -4,6 +4,19 @@ All data lives in the Shared Drive as **Google Sheets** (every list) and **Googl
 plus PDFs. You reach them through the **Google Drive, Google Sheets and Google Docs connectors**, from anywhere, a
 phone included. The scripts can't use connectors, so every job is the same three steps.
 
+## 0. Get the scripts
+
+The repo attached to your Project can be read but not run: its files never reach your code sandbox. So before the first script
+in a chat, download the public repo into the sandbox:
+
+```
+curl -sSL https://github.com/ICM-TEST/coaching-crm/archive/refs/heads/main.tar.gz | tar xz
+```
+
+Run every `python3 scripts/…` from `coaching-crm-main/workspace`, with `--root` and `work` as the full path of your `work/`.
+If the folder is already there, use it. **If the download fails, stop and tell the person the exact error.** Don't retype
+the scripts by hand or look for another way.
+
 ## 1. Read: make a working copy
 
 In your own workspace, make a folder `work/` that mirrors the drive's folders. Download only what the job lists
@@ -13,7 +26,8 @@ In your own workspace, make a folder `work/` that mirrors the drive's folders. D
 |---|---|---|
 | a Google **Sheet** `hub/clients` | `work/hub/clients.csv` | Drive connector: download, exported as CSV |
 | a Google **Doc** `factory/business` | `work/factory/business.txt` | Drive connector: download, exported as plain text |
-| a PDF, font, bank CSV | same name | Drive connector: download |
+| a PDF, bank CSV | same name | Drive connector: download |
+| the invoice fonts (coach, when issuing) | `work/factory/invoice-template/fonts/` | Copy from `_templates/drive/factory/invoice-template/fonts/` in the downloaded repo, before the snapshot. They aren't on the drive |
 | an empty folder the job needs | make the same folder | (check it exists on the drive first) |
 
 Files you need to know about but not open (a recon's PDFs, POPs) go in `work/.drive-index.csv`, with columns

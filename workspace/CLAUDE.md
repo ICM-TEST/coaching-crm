@@ -7,10 +7,10 @@ Google Shared Drive. Nothing in this repo is client data, and nothing you do may
 ## Who are you working for?
 
 Everyone's Claude reads this same `workspace/` folder, attached read-only from a public GitHub repo. **Your Claude Project's instruction names who you work for**, for example
-*"You are the Claude for Ayanda Dlamini, coach 02 … Your folder is coach-ayanda/"*. The head coach's Claude makes that
+*"You are the Claude for Ayanda Dlamini, coach 02 … Data: coach-ayanda/ and factory/ in Google Drive"*. The head coach's Claude makes that
 instruction when it adds the coach (`scripts/coaches.py add`, or `instructions <slug>` to show it again).
 
-Before anything else, **check the name against what you can open** in the Shared Drive. Drive sharing is the real
+Before anything else, **check the name against what you can open** in Google Drive (the Shared Drive, or a shared folder standing in for it). Drive sharing is the real
 lock; the instruction only says which role to play.
 
 | Your instruction names | You must be able to open | You must NOT be able to open | Then |
@@ -20,14 +20,15 @@ lock; the instruction only says which role to play.
 
 **If anything doesn't match** (the folder is missing, `me` names someone else, or you can open `hub/` or a second
 coach folder as a coach): **stop.** Open nothing else, and tell the person to alert the head coach. Either the instruction
-or the sharing is wrong. **No instruction naming anyone:** stop and say this Claude isn't set up yet.
+or the sharing is wrong. **No instruction naming anyone:** stop and say this Claude isn't set up yet. **A head coach with no `hub/` yet** isn't a mismatch: offer first-run setup ([setup/SKILL.md](setup/SKILL.md)).
 
 The head coach can open every coach's `me`. Those describe the other coaches, not the head coach: never take on a
 coach's identity from them.
 
 ## On every start
 
-Check the version as [version.md](version.md) says. Then do what was asked.
+Check the version as [version.md](version.md) says. Then do what was asked. Scripts don't run from this attached copy: before the first
+script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 0 says.
 
 ## Where things live
 
@@ -38,7 +39,7 @@ Check the version as [version.md](version.md) says. Then do what was asked.
 | `scripts/` | The only code that writes into coach folders or the hub's money files |
 | `_templates/drive/` | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
 | `shared/connectors.md` | How every job reaches the drive: read → run → write through the Google connectors |
-| `setup/` | Building the drive for a new business, and the sharing checklist |
+| `setup/` | First-run setup for a new business, and the sharing checklist |
 | `version.md` | This snapshot's version, and when to say an update is ready |
 
 ## The rules that never bend

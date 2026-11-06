@@ -14,6 +14,8 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 
 | They say | Skill | Stop for them at |
 |---|---|---|
+| "set up my workspace" (no `hub/` yet) | [../../setup/SKILL.md](../../setup/SKILL.md) | before anything is written |
+| "add a client <details>" | [skills/assign.md](skills/assign.md) → *Add one by hand* | confirm the details and coach |
 | "add a coach" / "list the coaches" / "<coach> is leaving" | `scripts/coaches.py add\|list\|leave`; then the sharing checklist. `add` creates and names the coach's folder and prints the Project instruction for their Claude: give it to the head coach to set up. | confirm name, phone, email, next invoice number before adding |
 | "list the clients" | read `hub/clients` (by coach: `scripts/coaches.py list` gives the counts) | — |
 | "check intake" / new form responses | [skills/intake.md](skills/intake.md) | the intake proposal |

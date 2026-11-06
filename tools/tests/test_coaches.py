@@ -47,7 +47,7 @@ class Coaches(unittest.TestCase):
         (self.root / "factory/business.txt").write_text("trading_name: Example Coaching Co\n")
         (self.root / "hub/me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
         out = run(self.root, "instructions", "riley")
-        for expected in ("You are the Claude for Riley Coach, coach 02 at Example Coaching Co", "Your folder is coach-riley/",
+        for expected in ("You are the Claude for Riley Coach, coach 02 at Example Coaching Co", "coach-riley/ and factory/ in Google Drive",
                          "If you can open hub/ or any other coach's folder", "stop"):
             self.assertIn(expected, out)
         self.assertNotIn("Morgan", out)

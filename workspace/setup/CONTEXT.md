@@ -5,7 +5,7 @@ Done once per business, by Ross with the head coach. Order matters: sharing is t
 ## Process
 1. Ross collects the answers with the head coach. They go only into the Drive files, never into this repo.
 2. Create a **Google Workspace Shared Drive** named `<Business> CRM`. The head coach is *Manager*.
-3. Build the drive from the template, through the connectors (the head coach's Claude, [../shared/connectors.md](../shared/connectors.md)):
+3. The head coach says "set up my workspace" ([SKILL.md](SKILL.md) asks for all of this). It builds the drive from the template, through the connectors (the head coach's Claude, [../shared/connectors.md](../shared/connectors.md)):
    copy `_templates/drive/` (without `coach-template/`) into an empty `work/`, fill `factory/business.txt`,
    `factory/billable-work.csv` and `hub/settings.txt` (bank CSV columns from an anonymised export), and run
    `scripts/sync.py plan` against an empty snapshot: it lists every folder, Sheet and Doc to create.
