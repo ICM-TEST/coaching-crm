@@ -1,5 +1,5 @@
 ---
-version: 0.1.0
+version: 0.2.0
 released: 2026-11-06
 ---
 
@@ -19,3 +19,4 @@ Then carry on normally. Never refuse work because the snapshot is behind. If `fa
 ## What changed
 
 - 0.1.0 (2026-11-06): first public release.
+- 0.2.0 (2026-11-06): First-run setup; scripts come from the public repo
