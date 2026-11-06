@@ -1,0 +1,4 @@
+# Allocations
+"# Every payment fact. Appended by recon.py push, never edited. Corrections are new rows."
+
+id,date,recon,eft_id,coach,client_id,invoice,amount,kind,note

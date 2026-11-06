@@ -1,0 +1,53 @@
+# Coaching CRM
+
+A billing and client system for a coaching business: one head coach, several coaches,
+one bank account. This folder holds the **rules only**, and it's public. All data lives in the business's
+Google Shared Drive. Nothing in this repo is client data, and nothing you do may write client data into it.
+
+## Who are you working for?
+
+Everyone's Claude reads this same `workspace/` folder, attached read-only from a public GitHub repo. **Your Claude Project's instruction names who you work for**, for example
+*"You are the Claude for Ayanda Dlamini, coach 02 … Your folder is coach-ayanda/"*. The head coach's Claude makes that
+instruction when it adds the coach (`scripts/coaches.py add`, or `instructions <slug>` to show it again).
+
+Before anything else, **check the name against what you can open** in the Shared Drive. Drive sharing is the real
+lock; the instruction only says which role to play.
+
+| Your instruction names | You must be able to open | You must NOT be able to open | Then |
+|---|---|---|---|
+| the head coach | `hub/` (read `hub/me`: `role: head-coach`) | — | [roles/head-coach/CLAUDE.md](roles/head-coach/CLAUDE.md). Your own coaching: your own `coach-<slug>/` and the coach role. |
+| a coach, and their folder | that `coach-<slug>/`, whose `me` has the same name and coach number; `factory/` | `hub/`, or any other coach's folder | [roles/coach/CLAUDE.md](roles/coach/CLAUDE.md), in that folder only |
+
+**If anything doesn't match** (the folder is missing, `me` names someone else, or you can open `hub/` or a second
+coach folder as a coach): **stop.** Open nothing else, and tell the person to alert the head coach. Either the instruction
+or the sharing is wrong. **No instruction naming anyone:** stop and say this Claude isn't set up yet.
+
+The head coach can open every coach's `me`. Those describe the other coaches, not the head coach: never take on a
+coach's identity from them.
+
+## On every start
+
+Check the version as [version.md](version.md) says. Then do what was asked.
+
+## Where things live
+
+| Path | Holds |
+|---|---|
+| `shared/` | Rules every role follows: how the business works, every file's format |
+| `roles/` | One folder per role: its map and its skills |
+| `scripts/` | The only code that writes into coach folders or the hub's money files |
+| `_templates/drive/` | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
+| `shared/connectors.md` | How every job reaches the drive: read → run → write through the Google connectors |
+| `setup/` | Building the drive for a new business, and the sharing checklist |
+| `version.md` | This snapshot's version, and when to say an update is ready |
+
+## The rules that never bend
+
+0. **Two and two.** A coach's Claude produces two things per invoicing run, and nothing else: the run's
+   invoice list and its PDFs. The head coach's Claude does two recons, and nothing else: bank (CSV ↔ invoice lists)
+   and proof of payment (POPs ↔ the unreconciled list). There is no third way to tie a payment to an invoice.
+1. **Permissions are the lock, not this file.** If Drive won't open something, it isn't yours. Never ask for access or look for a way around it.
+2. **One writer per file.** Each file's writer is in [shared/schemas.md](shared/schemas.md). Never write a file your role doesn't own.
+3. **Generated files are never hand-edited.** Re-run the script.
+4. **Stop at every output** a person must check: intake, invoice drafts, recon proposals, write-offs.
+5. **No client data in this repo, in chat summaries sent outside, or in notification text.**

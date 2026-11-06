@@ -1,0 +1,4 @@
+# All invoices
+"# The head coach's own copy of every sealed invoice row, taken the first time a recon sees its list. Appended, never edited. The books work from this copy."
+
+coach,list,seal,archived,number,date,client_id,client,payer,reference,amount,applies_to,pdf,pdf_sha,pdf_bytes

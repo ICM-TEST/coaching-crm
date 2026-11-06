@@ -1,0 +1,5 @@
+version: 0.1.0
+
+Release
+
+The latest version Ross has released. The head coach's Claude changes this line when Ross says a new version is out.

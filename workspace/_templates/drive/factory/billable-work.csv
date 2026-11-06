@@ -1,0 +1,6 @@
+# Billable work
+"# What coaches can bill, exactly as each item is named on invoices, and its price. Only the head coach edits this."
+# billed: in advance for group sessions and squads (an invoice on the 24th can bill next month's sessions);
+# after for everything else (billed for the month past). Blank means after.
+
+code,name,unit,rate,billed

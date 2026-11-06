@@ -1,0 +1,6 @@
+role: coach
+
+Me
+
+*Replaced when the head coach adds this coach (scripts/coaches.py add): generated from their row in the head coach's
+list of coaches. Read only.*

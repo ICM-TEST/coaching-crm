@@ -1,0 +1,10 @@
+# Coaches
+"# The head coach's list of everyone who coaches, the head coach included. Add coaches with scripts/coaches.py add,"
+"# which gives each the next coach number. Numbers are never reused, and rows are never deleted: a coach who leaves"
+# is set to active: no. Each coach's me is generated from their row here.
+# - number: the coach number in every invoice reference (2026-03-490).
+"# - code: two letters, used only in internal ids."
+"# - phone, email: printed on this coach's invoices."
+# - invoice_start: the next invoice number from the coach's old app (their sequence carries on from it).
+
+number,slug,code,name,phone,email,invoice_start,active

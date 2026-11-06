@@ -1,0 +1,4 @@
+# EFT ledger
+"# Every incoming bank line ever seen. Appended by recon.py, never edited."
+
+eft_id,date,amount,description,source

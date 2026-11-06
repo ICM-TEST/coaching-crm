@@ -1,0 +1,4 @@
+# Clients
+# The main list. Rows are never deleted. Status: new · active · left.
+
+id,name,phone,email,status,coach,since,notes

@@ -1,0 +1,6 @@
+# EFT reviews
+# The head coach's verdict on money the recon couldn't place on its own: client or non-client.
+"# Appended by recon.py, never edited. client money that isn't yet tied to an invoice is the"
+"# unreconciled live list (the unreconciled Sheet, generated)."
+
+eft_id,date,verdict,recon

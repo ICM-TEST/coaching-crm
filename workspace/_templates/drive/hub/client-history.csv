@@ -1,0 +1,4 @@
+# Client history
+# Append-only. One line per change to a client's coach or status.
+
+date,client_id,change,reason

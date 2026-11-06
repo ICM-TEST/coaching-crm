@@ -1,0 +1,27 @@
+trading_name: <business name, exactly as on the invoices>
+website: <website>
+account_holder: <name on the bank account>
+bank: <bank>
+branch_code: <branch code>
+account_type: <e.g. Current Account>
+account_number: <account number>
+payment_instruction: "Please EFT the above amount, using {reference} as your reference:"
+pop_request: "Please send your coach the proof of payment once paid."
+thanks: "Thank you."
+sign_off: <e.g. The ... Team>
+invoice_number_format: "{year}-{coach}-{seq}"
+vat_registered: false
+invoice_day: 24
+payment_terms: due on receipt
+
+Business
+
+Everything on an invoice that's the same for every coach. Only the head coach edits this.
+What changes per coach (their phone and email in the invoice header) lives in each coach's me.
+
+- payment_instruction: {reference} is replaced with the invoice's number, so clients are asked to pay with it.
+- invoice_number_format: how the invoice number is printed; it's also the payment reference. {year} is the invoice year,
+  {coach} the coach's own number (coach_number in their me), {seq} the coach's running invoice number:
+  2026-03-490. Unique across all coaches.
+- invoice_day: the day of the month invoices go out. Each month's invoicing run is due that day.
+- payment_terms: invoices are due on receipt, so the due date is the invoice date and days unpaid count from it.

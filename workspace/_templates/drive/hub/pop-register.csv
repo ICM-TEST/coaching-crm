@@ -1,0 +1,6 @@
+# Proof-of-payment register
+"# One row per POP file, written by the head coach's Claude as it reads each one. file is the path from the drive root:"
+# coach-<slug>/pops/… (uploaded by a coach) or hub/pops/… (received directly). client and invoice
+"# are what the coach said the POP is for, if they said. The POP recon reads this register; it uses a POP once."
+
+file,read_on,date,amount,payer,reference,client,invoice

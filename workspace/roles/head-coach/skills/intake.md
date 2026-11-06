@@ -1,0 +1,24 @@
+# Skill — intake (form responses → main list)
+
+## Inputs
+- The Form's response Sheet (Google Sheets connector, the head coach's account)
+- `hub/clients`, `hub/coaches`
+- The latest `hub/intake/…` Sheet (for its `last_row:` value, so rows aren't read twice)
+
+## Process
+1. Read Sheet rows after `last_row`. If there are none, say "no new responses" and stop.
+2. For each row, find possible matches in `hub/clients` on phone, then email, then name. A match on
+   phone or email = **same person** (returning or duplicate). A match on name only = **ask**.
+3. Propose a coach: the coach the client named → their current coach if returning → blank.
+4. Write a new `hub/intake/YYYY-MM-DD` Sheet with a `last_row:` / `<n>` row at the top, then a table:
+   `row` · `name` · `phone` · `email` · `new/existing` · `named coach` · `match` · `proposed coach` · `decision`.
+   `decision` is pre-filled with `add`, `reactivate C0042` or `?`.
+
+## Human check — STOP
+The head coach reads the intake Sheet and fixes the `decision`s. Never merge or reactivate without them.
+
+## After approval
+- `add` → new row in `hub/clients` (next `C` number, `since` = today; status `active` with a coach, `new` without).
+- `reactivate Cxxxx` → set that row's status back to `active`, and its coach.
+- Every change → one line in `hub/client-history`.
+- Run `scripts/build_lists.py coach-clients`, then @-mention the coaches whose `clients` changed.
