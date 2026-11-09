@@ -1,6 +1,7 @@
 # Sharing checklist
 
-Confidentiality rests entirely on these lines. Tick each one at setup, and again whenever a coach joins or leaves.
+Confidentiality rests entirely on these lines. The head coach follows them through the steps their Claude gives
+(`scripts/coaches.py share` and `unshare`, from [../roles/head-coach/coach-steps.md](../roles/head-coach/coach-steps.md)).
 
 ## Shared Drive membership
 - [ ] The **only** Shared Drive member is the head coach (*Manager*). Coaches are **not** members of the drive itself.
@@ -10,7 +11,7 @@ Confidentiality rests entirely on these lines. Tick each one at setup, and again
 ## Folders
 - [ ] `hub/`: no one added beyond the drive's members.
 - [ ] `factory/`: every active coach added as **Viewer**.
-- [ ] each `coach-<slug>/`: **that coach only**, as **Viewer**, so `me`, `clients` and `unpaid` can't be changed
+- [ ] each `coach-<slug>/`: **that coach only**, as **Viewer**, so their `.me` Doc, `clients` and `unpaid` can't be changed
       by the coach or any Claude chat of theirs.
 - [ ] inside it, `invoice-lists/`, `invoices/` and `pops/`: **that coach**, as **Contributor** (can add and edit, and can share individual files; can't
       delete or move files, or share folders). Those are the only places a coach writes. *(Pilot check: Drive allows raising access on a
@@ -28,21 +29,11 @@ Confidentiality rests entirely on these lines. Tick each one at setup, and again
 ## GitHub
 - [ ] Nobody but Ross is a collaborator or member. The repo is public, so coaches read it without access. Not being a member is the lock on the rules.
 
-## When a coach joins
-- [ ] `scripts/coaches.py add --name … --phone … --email … --invoice-start …` (gives the next coach number).
-- [ ] Share `coach-<slug>/` with them as **Viewer**; its `invoice-lists/`, `invoices/` and `pops/` as **Contributor**;
-      and `factory/` as **Viewer**.
-- [ ] Set up their Claude Project: this repo's `workspace` folder only (Project knowledge → Add from GitHub → Configure files), code execution on, the Google Drive, Sheets and Docs connectors under
-      **their** account, and the named instruction that
-      `coaches.py add` printed. Then ask it **"Who do you work for?"** It must answer with their name, coach number and
-      folder, and say it can't open `hub/` or another coach's folder. If it names anyone else, or says *stop*, fix the
-      instruction or the sharing before they use it.
-
-## When a coach leaves
-- [ ] `scripts/coaches.py leave <slug>` (sets `active: no`; their number is never reused). Their folder and invoices stay;
-      recon keeps matching payments to them.
-- [ ] Remove them from `coach-<slug>/` and `factory/`.
-- [ ] Reassign their clients (head coach → *assign*).
+## When a coach joins or leaves
+The head coach's Claude walks through it: [../roles/head-coach/skills/coaches.md](../roles/head-coach/skills/coaches.md).
+Joining ends with the coach's Claude answering **"Who do you work for?"** with their name, coach number and folder, and
+saying it can't open `hub/`. Leaving makes their active clients `unallocated`, and removes their access from all five
+folders: access given directly on a subfolder stays until it's removed there too.
 
 > **To build:** `scripts/check_sharing.py`, which lists every folder's sharing through the Drive API and flags any line above
 > that doesn't hold. Until then, this checklist is done by hand.

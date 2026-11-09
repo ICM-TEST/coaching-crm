@@ -32,7 +32,7 @@ The coach corrects or approves the drafts.
 - It makes every PDF in `invoices/<period>/` (`Invoice 2026-03-490.pdf`, …), **then** writes `invoice-lists/<month>`.
   Those are this coach's two outputs, and nothing else is written.
 - Every invoice is the business's own layout ([factory/invoice-rules](../../../factory/invoice-rules) in the drive);
-  only this coach's phone and email (from `me`) are theirs.
+  only this coach's phone and email (from their `.me` Doc) are theirs.
 - The list existing is what tells the head coach this coach's run is done. **Nothing to bill?** Issue with
   `{"invoices": []}`, so the run still shows as done.
 - The coach sends each PDF to its client themselves. You never send, and you don't write messages.
@@ -42,7 +42,7 @@ The coach corrects or approves the drafts.
 Follow [../../../shared/connectors.md](../../../shared/connectors.md): read → run → write.
 
 1. **Read.** `python3 scripts/issue.py --coach-dir coach-<slug> --needs` lists what to download into `work/`: this
-   coach's `me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list and run Sheets,
+   coach's `<slug>.me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list and run Sheets,
    the fonts (copied from the downloaded repo), and the month's PDF folder (check it exists; make the same empty folder in `work/`).
    Then `python3 scripts/sync.py snapshot work`.
 2. **Draft, dry run, issue** as above, with `--root work`.

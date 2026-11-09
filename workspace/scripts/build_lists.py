@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuild generated lists from the head coach's sources.
 
-  build_lists.py --root <drive> coach-clients   coach list + main list -> each coach's me Doc and clients Sheet
+  build_lists.py --root <drive> coach-clients   coach list + main list -> each coach's <slug>.me Doc and clients Sheet
   build_lists.py --root <drive> books           allocations -> each coach's unpaid Sheet, hub views
 
 Head coach only: needs hub/.

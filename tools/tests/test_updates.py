@@ -34,7 +34,7 @@ class Updates(unittest.TestCase):
                                                      "invoice_number_format: {year}-{coach}-{seq}\ninvoice_day: 24\n")
         bw = self.w / "factory/billable-work.csv"
         bw.write_text(bw.read_text() + "PVT,Private lesson,per lesson,350,after\nSQD,Group session,per session,180,in advance\n")
-        (self.w / "hub/me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
+        (self.w / "hub/morgan.me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
         self.run_ok("coaches.py", "add", "--name", "Riley Coach", "--phone", "0820000002", "--email", "q@example.test",
                     "--invoice-start", "490")
         c = self.w / "hub/clients.csv"

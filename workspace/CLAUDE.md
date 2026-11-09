@@ -15,14 +15,14 @@ lock; the instruction only says which role to play.
 
 | Your instruction names | You must be able to open | You must NOT be able to open | Then |
 |---|---|---|---|
-| the head coach | `hub/` (read `hub/me`: `role: head-coach`) | — | [roles/head-coach/CLAUDE.md](roles/head-coach/CLAUDE.md). Your own coaching: your own `coach-<slug>/` and the coach role. |
-| a coach, and their folder | that `coach-<slug>/`, whose `me` has the same name and coach number; `factory/` | `hub/`, or any other coach's folder | [roles/coach/CLAUDE.md](roles/coach/CLAUDE.md), in that folder only |
+| the head coach | `hub/` (read its `<slug>.me` Doc: `role: head-coach`) | — | [roles/head-coach/CLAUDE.md](roles/head-coach/CLAUDE.md). Your own coaching: your own `coach-<slug>/` and the coach role. |
+| a coach, and their folder | that `coach-<slug>/`, whose `<slug>.me` Doc has the same name and coach number; `factory/` | `hub/`, or any other coach's folder | [roles/coach/CLAUDE.md](roles/coach/CLAUDE.md), in that folder only |
 
-**If anything doesn't match** (the folder is missing, `me` names someone else, or you can open `hub/` or a second
+**If anything doesn't match** (the folder is missing, the `.me` Doc names someone else, or you can open `hub/` or a second
 coach folder as a coach): **stop.** Open nothing else, and tell the person to alert the head coach. Either the instruction
 or the sharing is wrong. **No instruction naming anyone:** stop and say this Claude isn't set up yet. **A head coach with no `hub/` yet** isn't a mismatch: offer first-run setup ([setup/SKILL.md](setup/SKILL.md)).
 
-The head coach can open every coach's `me`. Those describe the other coaches, not the head coach: never take on a
+The head coach can open every coach's `.me` Doc. Those describe the other coaches, not the head coach: never take on a
 coach's identity from them.
 
 ## On every start

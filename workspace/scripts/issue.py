@@ -41,7 +41,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from crm.books import GENERATOR, LIST_COLUMNS, file_hash, invoice_lists, list_seal  # noqa: E402
-from crm.common import ZERO, fmt, frontmatter, is_placeholder, money, read_sections, read_table, write_sheet  # noqa: E402
+from crm.common import ZERO, coach_me, fmt, frontmatter, is_placeholder, money, read_sections, read_table, write_sheet  # noqa: E402
 
 
 CURRENCY = {"symbol": ""}                   # currency_symbol from factory/business, set when the run is planned
@@ -86,17 +86,18 @@ def _paid_so_far(folder: Path, number: str, list_files: set) -> Decimal | None:
 
 def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str | None, extra: bool) -> dict:
     folder, factory = root / coach_dir, root / "factory"
-    me, biz = frontmatter(folder / "me.txt"), frontmatter(factory / "business.txt")
+    me_doc = f"{coach_dir}/{coach_me(folder).name[:-4]}"
+    me, biz = frontmatter(coach_me(folder)), frontmatter(factory / "business.txt")
     unset = [k for k, v in biz.items() if is_placeholder(v)]
     if unset:
         raise Refused("factory/business isn't finished: " + ", ".join(unset) + " still hold a <placeholder>. The head "
                       "coach fills each one in, or leaves it blank, before any invoice is issued.")
     CURRENCY["symbol"] = str(biz.get("currency_symbol") or "").strip()
     if me.get("role") != "coach" or not me.get("code"):
-        raise Refused(f"{coach_dir}/me isn't a coach's details Doc")
+        raise Refused(f"{me_doc} isn't a coach's details Doc")
     coach_no = str(me.get("coach_number", "")).strip()
     if "{coach}" in (biz.get("invoice_number_format") or "{coach}") and not coach_no.isdigit():
-        raise Refused(f"{coach_dir}/me has no coach_number: every coach needs their own, e.g. 03")
+        raise Refused(f"{me_doc} has no coach_number: every coach needs their own, e.g. 03")
     coach_no = coach_no.zfill(2)
     if not re.fullmatch(r"\d{4}-\d{2}", period):
         raise Refused(f"period must look like 2026-11, not '{period}'")
@@ -131,7 +132,7 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
                       "issue an extra list with --extra.")
     list_name = f"{period}.csv" if not same_period else f"{period}-{len(same_period) + 1}.csv"
 
-    # Each coach has their own running sequence, carried on from their old app (invoice_start in me).
+    # Each coach has their own running sequence, carried on from their old app (invoice_start in their .me Doc).
     # The printed number carries the coach's own number (2026-03-490), so it's unique across coaches and works
     # as the payment reference. The internal id carries the coach's code as well, as a second guard.
     seqs = [int(n.rsplit("-", 1)[-1]) for n in issued if n.startswith(f"{code}-") and n.rsplit("-", 1)[-1].isdigit()]
@@ -369,7 +370,7 @@ def issue(run: dict) -> Path:
     return out
 
 
-NEEDS = ["{coach}/me  (Doc, as .txt)", "{coach}/clients  (Sheet, as .csv)", "{coach}/invoice-lists/*  (Sheets, as .csv)",
+NEEDS = ["{coach}/{slug}.me  (Doc, as .txt)", "{coach}/clients  (Sheet, as .csv)", "{coach}/invoice-lists/*  (Sheets, as .csv)",
          "{coach}/unpaid  (Sheet, as .csv)",
          "factory/business  (Doc, as .txt)", "factory/billable-work  (Sheet, as .csv)",
          "factory/invoicing-runs  (Sheet, as .csv)", "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)",
@@ -414,7 +415,7 @@ def main() -> None:
     a = ap.parse_args()
     if a.needs:
         print("Download these into the working copy, keeping the same folders:")
-        print("\n".join("  " + n.format(coach=a.coach_dir) for n in NEEDS))
+        print("\n".join("  " + n.format(coach=a.coach_dir, slug=a.coach_dir.removeprefix("coach-")) for n in NEEDS))
         return
     if not (a.root and a.period and a.drafts):
         ap.error("--root, --period and --drafts are needed to issue")

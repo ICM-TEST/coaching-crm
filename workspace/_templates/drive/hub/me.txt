@@ -1,7 +1,0 @@
-name: <head coach name>
-slug: <slug>
-role: head-coach
-
-Me
-
-The head coach. Their own coaching is in coach-<slug>/.

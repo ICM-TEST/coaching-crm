@@ -33,7 +33,7 @@ class Sync(unittest.TestCase):
             "invoice_day: 24\n")
         bw = self.work / "factory/billable-work.csv"
         bw.write_text(bw.read_text() + "PVT,Private lesson,per lesson,350,after\n")
-        (self.work / "hub/me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
+        (self.work / "hub/morgan.me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
         run("coaches.py", "--root", str(self.work), "add", "--name", "Riley Coach", "--phone", "+27820000002",
             "--email", "q@example.test", "--invoice-start", "490")
         clients = self.work / "hub/clients.csv"

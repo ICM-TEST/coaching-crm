@@ -229,6 +229,17 @@ def set_frontmatter(path: Path, key: str, value: str) -> None:
 
 # ---------- the Drive tree ----------
 
+def me_name(slug: str) -> str:
+    """Each person's details Doc is named after them (<slug>.me), so it reads clearly in Drive and in search."""
+    return f"{slug}.me.txt"
+
+
+def coach_me(folder) -> Path:
+    """coach-<slug>/<slug>.me: a coach's details Doc."""
+    folder = Path(folder)
+    return folder / me_name(folder.name.removeprefix("coach-"))
+
+
 class Drive:
     """Paths inside the business's Shared Drive, or a working copy of it (shared/schemas.md)."""
 
@@ -242,6 +253,13 @@ class Drive:
 
     def coach_dir(self, slug: str) -> Path:
         return self.root / f"coach-{slug}"
+
+    def head_me(self) -> Path:
+        """hub/<slug>.me: the head coach's details Doc. There's only ever one."""
+        found = sorted(self.hub.glob("*.me.txt"))
+        if len(found) > 1:
+            raise SystemExit("hub/ has more than one .me Doc, but there's only one head coach. Keep theirs.")
+        return found[0] if found else self.hub / me_name("head-coach")
 
     def coaches(self, active_only: bool = True) -> list[dict]:
         rows = read_table(self.hub / "coaches.csv")

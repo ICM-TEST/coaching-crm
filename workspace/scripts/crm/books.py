@@ -17,8 +17,8 @@ from collections import defaultdict
 from decimal import Decimal
 from pathlib import Path
 
-from .common import (ZERO, Drive, append_rows, days_between, fmt, frontmatter, iso_date, money, read_sheet,
-                     read_table, today, write_generated)
+from .common import (ZERO, Drive, append_rows, coach_me, days_between, fmt, frontmatter, iso_date, me_name,
+                     money, read_sheet, read_table, today, write_generated)
 
 ALLOC_COLUMNS = ["id", "date", "recon", "eft_id", "coach", "client_id", "invoice", "amount", "kind", "note"]
 LEDGER_COLUMNS = ["eft_id", "date", "amount", "description", "source"]
@@ -104,7 +104,7 @@ def audit_coach_folder(folder: Path, lists: list[tuple[dict, list[dict]]], index
         name, top = rel.rsplit("/", 1)[-1], rel.split("/", 1)[0]
         if name.startswith(".") or name in IGNORED or top == "pops":
             continue                                        # POPs: the coach uploads whatever the client sent
-        if rel in ("me.txt", "clients.csv", "unpaid.csv", "invoice-lists/README.txt"):
+        if rel in (me_name(slug_dir.removeprefix("coach-")), "clients.csv", "unpaid.csv", "invoice-lists/README.txt"):
             continue
         if top == "invoice-lists" and rel.endswith(".csv"):
             continue                                        # judged by its seal, in invoice_lists()
@@ -300,7 +300,7 @@ ME_FIELDS = [("name", "name"), ("slug", "slug"), ("code", "code"), ("coach_numbe
 
 
 def build_me_files(drive: Drive) -> list[str]:
-    """Each coach's me Doc, from their row in the head coach's list of coaches. Returns slugs whose file changed.
+    """Each coach's <slug>.me Doc, from their row in the head coach's list of coaches. Returns slugs whose file changed.
 
     The coach's Claude and the invoice generator read it; the coach can't open the hub, so this is how their
     number, phone and email reach them. Changing a coach's details means changing their row, then rebuilding."""
@@ -313,7 +313,7 @@ def build_me_files(drive: Drive) -> list[str]:
         text = (f"Me\n\nGenerated from the head coach's list of coaches. Read only: ask the head coach to change "
                 f"anything here.\n\n{fm}role: coach\n\nThe only per-coach details on an invoice are this coach's phone and "
                 "email. Everything else comes from factory/business.\n")
-        path = folder / "me.txt"
+        path = coach_me(folder)
         if not path.exists() or path.read_text(encoding="utf-8") != text:
             path.write_text(text, encoding="utf-8")
             changed.append(c["slug"])

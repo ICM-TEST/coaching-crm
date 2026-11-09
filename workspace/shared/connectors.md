@@ -7,15 +7,22 @@ phone included. The scripts can't use connectors, so every job is the same three
 ## 0. Get the scripts
 
 The repo attached to your Project can be read but not run: its files never reach your code sandbox. So before the first script
-in a chat, download the public repo into the sandbox:
+in a chat, copy the public repo into the sandbox with git:
+
+```
+git clone --depth 1 https://github.com/ICM-TEST/coaching-crm.git coaching-crm-main
+```
+
+Only if the sandbox has no `git` command, use the download link instead. It redirects to `codeload.github.com`, which
+some sandboxes block:
 
 ```
 curl -sSL https://github.com/ICM-TEST/coaching-crm/archive/refs/heads/main.tar.gz | tar xz
 ```
 
 Run every `python3 scripts/…` from `coaching-crm-main/workspace`, with `--root` and `work` as the full path of your `work/`.
-If the folder is already there, use it. **If the download fails, stop and tell the person the exact error.** Don't retype
-the scripts by hand or look for another way.
+If the folder is already there, use it. **These are the only two ways. If they fail, stop and tell the person the exact
+error.** Don't retype the scripts by hand, fetch them from anywhere else, or look for another way.
 
 ## 1. Read: make a working copy
 

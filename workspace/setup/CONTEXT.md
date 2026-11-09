@@ -3,21 +3,21 @@
 Done once per business, by Ross with the head coach. Order matters: sharing is the step that's hard to undo.
 
 ## Process
-1. Ross collects the answers with the head coach. They go only into the Drive files, never into this repo.
-2. Create a **Google Workspace Shared Drive** named `<Business> CRM`. The head coach is *Manager*.
-3. The head coach says "set up my workspace" ([SKILL.md](SKILL.md) asks for all of this). It builds the drive from the template, through the connectors (the head coach's Claude, [../shared/connectors.md](../shared/connectors.md)):
+Answers go only into the Drive files, never into this repo.
+
+1. Create a **Google Workspace Shared Drive** named `<Business> CRM`. The head coach is its only member (*Manager*).
+2. The head coach says "set up my workspace" ([SKILL.md](SKILL.md) asks for all of this). It builds the drive from the template, through the connectors (the head coach's Claude, [../shared/connectors.md](../shared/connectors.md)):
    copy `_templates/drive/` (without `coach-template/`) into an empty `work/`, fill `factory/business.txt` and
    `factory/billable-work.csv`, and run
    `scripts/sync.py plan` against an empty snapshot: it lists every folder, Sheet and Doc to create.
-   Then add every coach, the head coach first, with `scripts/coaches.py add` (name, phone, email, next invoice number)
-   and write its plan the same way. Each coach gets the next **coach number** (01, 02, …), their own folder, their
-   `me` Doc, and empty `clients` and `unpaid` Sheets.
-4. Create the Google Form (the head coach's account) with the questions Ross gives you. Link it to a response Sheet in `hub/`.
-5. **Ross reads the folder tree and [sharing-checklist.md](sharing-checklist.md) before any sharing is applied.**
-6. Apply the sharing exactly as the checklist says. Tick each line.
-7. Ross sets up one Claude Project per person: the whole repo attached from GitHub (every folder ticked), code execution on, and the Google
-   connectors under their own account. `scripts/coaches.py instructions <slug>` or `instructions head-coach` prints each
-   person's Project instruction. Every job is then read → run → write ([../shared/connectors.md](../shared/connectors.md)).
+   If the head coach coaches, they're added too (`scripts/coaches.py add`): coach number 01, their own folder.
+3. Then, one at a time and guided step by step by their Claude:
+   - **each coach** ([../roles/head-coach/skills/coaches.md](../roles/head-coach/skills/coaches.md)): the next coach
+     number, their folder, the head coach sharing it with them folder by folder, and a setup message for the coach;
+   - **what's kept about each client, the client form and its link, and the current client list**
+     ([../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md)).
 
 ## Human check
-Step 5. Nothing is shared until Ross has read the tree and the checklist.
+Every answer is read back before anything is written. Sharing is done by the head coach, folder by folder, following
+the steps their Claude gives ([sharing-checklist.md](sharing-checklist.md) is the rule they follow). Nobody but the
+head coach is a member of the shared drive.

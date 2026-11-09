@@ -9,7 +9,7 @@ What's on every invoice, top to bottom
 | Part | Content | From |
 |---|---|---|
 | Title | INVOICE (left) · trading name (right) | factory/business |
-| Header | trading name · website · the coach's phone · the coach's email | business, the coach's me |
+| Header | trading name · website · the coach's phone · the coach's email | business, the coach's .me Doc |
 | Bill-to box | BILL TO: the client's full name and phone · INVOICE # · ISSUED · DUE | clients; the generator |
 | Items | ITEM · PRICE · QUANTITY · AMOUNT. One row per item per month, e.g. *<item> - November × 4* | the coach's draft × factory/billable-work |
 | Totals | Subtotal · Total · Amount Due | the generator |
@@ -22,9 +22,9 @@ Numbers and the payment reference
 
 - Invoice number = payment reference: year-coach number-invoice number, e.g. 2026-03-490
   (invoice_number_format in business: {year}-{coach}-{seq}).
-- Coach number: each coach has their own two-digit number (coach_number in their me), never shared and never
+- Coach number: each coach has their own two-digit number (coach_number in their .me Doc), never shared and never
   reused. That's what makes every reference unique across the business. The bank recon flags any two coaches sharing one.
-- Invoice number: each coach's own running sequence, carried on from their old app (invoice_start in me).
+- Invoice number: each coach's own running sequence, carried on from their old app (invoice_start in their .me Doc).
   The generator gives out the next number. Coaches never choose one.
 - The bank recon recognises the reference with or without the year and dashes: 2026-03-490, 2026 03 490, 03-490.
 - Behind the scenes each invoice also gets an id with the coach's code (<coach code>-2026-0490). If a reference ever fits more

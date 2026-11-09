@@ -37,15 +37,15 @@ class Coaches(unittest.TestCase):
                   "--invoice-start", "1200")
         self.assertIn("Added Morgan Head as coach 01", out)
         run(self.root, "add", "--name", "Riley Coach", "--phone", "+27820000002", "--email", "riley@example.test",
-            "--invoice-start", "490")
-        me = frontmatter(self.root / "coach-riley/me.txt")
+            "--invoice-start", "490", "--google", "riley.drive@example.test")
+        me = frontmatter(self.root / "coach-riley/riley.me.txt")
         self.assertEqual((me["coach_number"], me["code"], me["phone"], me["email"], me["invoice_start"], me["role"]),
                          ("02", "RI", "+27820000002", "riley@example.test", "490", "coach"))
         self.assertTrue((self.root / "coach-riley/invoice-lists").is_dir())
 
         # the Project instruction names exactly who this Claude works for, and its folder
         (self.root / "factory/business.txt").write_text("trading_name: Example Coaching Co\n")
-        (self.root / "hub/me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
+        (self.root / "hub/morgan.me.txt").write_text("name: Morgan Head\nslug: morgan\nrole: head-coach\n")
         out = run(self.root, "instructions", "riley")
         for expected in ("You are the Claude for Riley Coach, coach 02 at Example Coaching Co", "coach-riley/ and factory/ in Google Drive",
                          "If you can open hub/ or any other coach's folder", "stop"):
@@ -55,6 +55,22 @@ class Coaches(unittest.TestCase):
         self.assertIn("You are the Claude for Morgan Head, the head coach", out)
         self.assertIn("coach-morgan/", out)
         run(self.root, "instructions", "nobody", ok=(1,))
+        self.assertEqual([c["google_account"] for c in read_table(self.root / "hub/coaches.csv")],
+                         ["morgan@example.test", "riley.drive@example.test"])           # defaults to the invoice email
+
+        # the step-by-step texts, filled in: nothing left to guess, no placeholder left over
+        share, welcome, unshare = (run(self.root, part, "riley") for part in ("share", "welcome", "unshare"))
+        for text in (share, welcome, unshare):
+            self.assertNotRegex(text, r"\{[a-z]+\}")
+            self.assertIn("riley.drive@example.test", text)
+            self.assertIn("coach-riley", text)
+        self.assertIn("Contributor", share)
+        self.assertIn("Never add Riley as a member of the whole shared drive", share)
+        self.assertIn("You are the Claude for Riley Coach, coach 02 at Example Coaching Co", welcome)
+        self.assertIn("send Morgan a screenshot", welcome)
+        self.assertIn("https://github.com/ICM-TEST/coaching-crm", welcome)
+        self.assertIn("five folders", unshare)
+        run(self.root, "welcome", "nobody", ok=(1,))
 
         append_rows(self.root / "hub/clients.csv", ["id", "name", "phone", "email", "status", "coach", "since", "notes"],
                     [{"id": "C0001", "name": "Ann Example", "phone": "+27820000009", "status": "active", "coach": "riley"}])
@@ -62,14 +78,19 @@ class Coaches(unittest.TestCase):
         self.assertRegex(out, r"02\s+Riley Coach\s+\+27820000002\s+riley@example.test\s+1\s+yes")
 
         out = run(self.root, "leave", "riley")
-        self.assertIn("reassign their 1 active client(s)", out)
+        self.assertIn("1 client(s) are now unallocated", out)
+        self.assertIn("C0001  Ann Example", out)
+        ann = read_table(self.root / "hub/clients.csv")[0]
+        self.assertEqual((ann["status"], ann["coach"]), ("unallocated", "riley"))      # the last coach stays visible
+        self.assertEqual(read_table(self.root / "hub/client-history.csv")[-1]["change"], "coach riley → unallocated")
+        self.assertEqual(read_table(self.root / "coach-riley/clients.csv"), [], "a coach who leaves sees no clients")
         self.assertEqual([c["active"] for c in read_table(self.root / "hub/coaches.csv")], ["yes", "no"])
-        self.assertTrue((self.root / "coach-riley/me.txt").exists(), "a coach who leaves keeps their folder")
+        self.assertTrue((self.root / "coach-riley/riley.me.txt").exists(), "a coach who leaves keeps their folder")
 
         out = run(self.root, "add", "--name", "Riley Second", "--email", "q2@example.test")
         self.assertIn("as coach 03", out)                          # 02 is never reused
         self.assertIn("folder coach-riley2/", out)
-        self.assertNotEqual(frontmatter(self.root / "coach-riley2/me.txt")["code"], "RI")
+        self.assertNotEqual(frontmatter(self.root / "coach-riley2/riley2.me.txt")["code"], "RI")
 
     def test_a_changed_phone_reaches_the_coach(self):
         run(self.root, "add", "--name", "Riley Coach", "--phone", "+27820000002")
@@ -77,7 +98,7 @@ class Coaches(unittest.TestCase):
         path.write_text(path.read_text().replace("+27820000002", "+27829999999"))
         subprocess.run([sys.executable, "scripts/build_lists.py", "--root", str(self.root), "coach-clients"],
                        cwd=REPO, check=True, capture_output=True)
-        self.assertEqual(frontmatter(self.root / "coach-riley/me.txt")["phone"], "+27829999999")
+        self.assertEqual(frontmatter(self.root / "coach-riley/riley.me.txt")["phone"], "+27829999999")
 
 
 if __name__ == "__main__":

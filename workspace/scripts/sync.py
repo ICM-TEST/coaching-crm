@@ -139,7 +139,7 @@ def plan(work: Path, role: str, coach: str) -> tuple[list[dict], list[str]]:
                                 f"create its invoice-list Sheets (not '{o['op']}')")
         elif role == "head-coach":
             top = p.split("/", 1)[0]
-            if top.startswith("coach-") and not (o["op"] == "create_folder" or p.endswith(("/me", "/clients", "/unpaid"))
+            if top.startswith("coach-") and not (o["op"] == "create_folder" or p == f"{top}/{top.removeprefix('coach-')}.me" or p.endswith(("/clients", "/unpaid"))
                                                  or (o["op"] == "create_doc" and p.endswith("README"))
                                                  or (o["op"] in ("create_sheet",) and p.endswith(("/clients", "/unpaid")))):
                 problems.append(f"{p}: the head coach's Claude doesn't write a coach's invoices, lists or POPs "

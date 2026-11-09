@@ -5,7 +5,7 @@
 
 ## Process
 1. Find the client. If more than one row fits the name, list them and ask.
-2. Set `coach` (and status `active` if it was `new`). For **leaving**, set status `left` and keep `coach`
+2. Set `coach` (and status `active` if it was `new` or `unallocated`). For **leaving**, set status `left` and keep `coach`
    as the last coach. Clients are never deleted.
 3. Append to `hub/client-history`: `date` · `client_id` · `coach <old slug> → <new slug>` · the reason given.
 4. Run `scripts/build_lists.py coach-clients`.

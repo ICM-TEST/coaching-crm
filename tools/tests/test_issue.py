@@ -65,7 +65,7 @@ class Issue(unittest.TestCase):
         bw = self.root / "factory/billable-work.csv"
         bw.write_text(bw.read_text() + "SQD60,Group Session,per session,240,in advance\n"
                                        "PVT,Private lesson,per lesson,350,after\n")
-        (self.root / "coach-riley/me.txt").write_text("---\nname: Riley\nslug: riley\ncode: RY\nrole: coach\n"
+        (self.root / "coach-riley/riley.me.txt").write_text("---\nname: Riley\nslug: riley\ncode: RY\nrole: coach\n"
                                                       "phone: \"+27820000001\"\nemail: riley@example.test\n"
                                                       "coach_number: 7\ninvoice_start: 490\n---\n")
         (self.root / "coach-riley/clients.csv").write_text(
@@ -121,7 +121,7 @@ class Issue(unittest.TestCase):
         for weight in (b"Inter-Regular", b"Inter-Medium", b"Inter-SemiBold", b"Inter-Bold"):
             self.assertIn(weight, first)                                                # the business's own font
         files = sorted(p.name for p in (self.root / "coach-riley").rglob("*") if p.is_file() and p.name != "README.txt")
-        self.assertEqual(files, sorted(["me.txt", "clients.csv", "unpaid.csv", ".keep", "2026-10.csv",
+        self.assertEqual(files, sorted(["riley.me.txt", "clients.csv", "unpaid.csv", ".keep", "2026-10.csv",
                                         "Invoice 2026-07-490.pdf", "Invoice 2026-07-491.pdf"]), "only the two outputs are added")
 
         lists = invoice_lists(self.root / "coach-riley")
@@ -130,7 +130,7 @@ class Issue(unittest.TestCase):
         # connector mode: what to download first, and what to upload after, PDFs before the list
         needs = subprocess.run([sys.executable, "scripts/issue.py", "--coach-dir", "coach-riley", "--needs"], cwd=REPO,
                                capture_output=True, text=True, check=True).stdout
-        for path in ("coach-riley/me", "coach-riley/clients", "coach-riley/invoice-lists/*",
+        for path in ("coach-riley/riley.me", "coach-riley/clients", "coach-riley/invoice-lists/*",
                      "factory/business", "factory/billable-work", "factory/invoice-template/fonts/*.ttf"):
             self.assertIn(path, needs)
         up = issued_output.split("Upload, in this order")[1]
@@ -168,7 +168,7 @@ class Issue(unittest.TestCase):
         self.assertIn("no credit notes", out)
 
     def test_every_coach_needs_a_coach_number(self):
-        me = self.root / "coach-riley/me.txt"
+        me = self.root / "coach-riley/riley.me.txt"
         me.write_text(me.read_text().replace("coach_number: 7\n", ""))
         self.assertIn("has no coach_number", self.issue(self.DRAFTS, ok=(1,)))
 

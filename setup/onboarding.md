@@ -11,7 +11,9 @@ The head coach says "set up my workspace" ([../workspace/setup/SKILL.md](../work
 2. Create a Project.
 3. Project knowledge → **Add from GitHub** → this repo, with every folder ticked: the whole repo is attached.
    Its `workspace/CLAUDE.md` tells Claude to work only from `workspace/`.
-4. Paste their instruction into the **Instructions** panel: the head coach's from [project-instructions.md](project-instructions.md), a coach's from `scripts/coaches.py instructions <slug>`.
+4. Paste their instruction into the **Instructions** panel: the head coach's from [project-instructions.md](project-instructions.md).
+   A coach gets theirs inside the setup message the head coach's Claude makes (`scripts/coaches.py welcome <slug>`),
+   which takes them through every step here.
 5. **Sync** once.
 
 Don't add anyone as a collaborator or organisation member. Not being one is the lock.

@@ -165,7 +165,7 @@ class Cycle(unittest.TestCase):
         # --- coach numbers: 01-08, in the order the head coach added them, each in that coach's own me Doc ---
         coaches = read_table(self.root / "hub/coaches.csv")
         self.assertEqual([(c["number"], c["slug"]) for c in coaches], [(f"{i:02d}", s) for i, (s, _, _) in enumerate(COACHES, 1)])
-        self.assertIn('coach_number: 06', self.coach_file("fatima", "me.txt"))
+        self.assertIn('coach_number: 06', self.coach_file("fatima", "fatima.me.txt"))
         # --- client lists: each coach gets only their own ---
         run("scripts/build_lists.py", *R, "coach-clients")
         for slug, _, _ in COACHES:
@@ -302,7 +302,7 @@ class Cycle(unittest.TestCase):
         # --- confidentiality: no coach file shows another coach's invoices or clients, or non-client money ---
         for slug, code, _ in COACHES:
             self.assertEqual(sorted(p.name for p in (self.root / f"coach-{slug}").iterdir() if p.is_file()),
-                             ["clients.csv", "me.txt", "unpaid.csv"], "a coach gets no payment file")
+                             sorted(["clients.csv", f"{slug}.me.txt", "unpaid.csv"]), "a coach gets no payment file")
             text = "".join(self.coach_file(slug, f) for f in ("clients.csv", "unpaid.csv"))
             for other, ocode, _ in COACHES:
                 if other == slug:

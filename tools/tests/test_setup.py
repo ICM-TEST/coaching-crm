@@ -32,7 +32,7 @@ class Setup(unittest.TestCase):
         self.run_("sync.py", "snapshot", str(self.w))
         shutil.copytree(REPO / "_templates/drive", self.w, dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns("coach-template", "fonts", ".DS_Store"))
-        (self.w / "hub/me.txt").write_text("name: Morgan Test\nslug: morgan\nrole: head-coach\n")
+        (self.w / "hub/morgan.me.txt").write_text("name: Morgan Test\nslug: morgan\nrole: head-coach\n")
         for name, phone, start in (("Morgan Test", "0820000001", "100"), ("Riley Test", "+27 82 000 0002", "490")):
             self.run_("coaches.py", "--root", str(self.w), "add", "--name", name, "--phone", phone,
                       "--email", "x@example.test", "--invoice-start", start)
@@ -44,9 +44,11 @@ class Setup(unittest.TestCase):
         self.assertEqual(kinds, {"create_folder", "create_sheet", "create_doc"})         # nothing to upload: no fonts
         paths = {o["path"] for o in ops}
         for expected in ("hub", "factory", "_archive", "hub/recon", "factory/invoice-template", "coach-riley/invoice-lists",
-                         "coach-riley/invoices", "coach-riley/pops", "hub/clients", "hub/coaches", "hub/me",
-                         "factory/release", "coach-riley/me", "coach-riley/clients", "coach-riley/unpaid"):
+                         "coach-riley/invoices", "coach-riley/pops", "hub/clients", "hub/coaches", "hub/morgan.me",
+                         "factory/release", "coach-riley/riley.me", "coach-riley/clients", "coach-riley/unpaid",
+                         "factory/client-form", "hub/bank/lines"):
             self.assertIn(expected, paths)
+        self.assertFalse({"hub/me", "coach-riley/me", "hub/settings"} & paths, "every .me Doc is named after its person")
         self.assertFalse([p for p in paths if p.endswith(".ttf")])
         folders = [o["path"] for o in ops if o["op"] == "create_folder"]
         for p in folders:                                                                # parents before children

@@ -29,7 +29,7 @@ class Statements(unittest.TestCase):
         self.root = self.tmp / "work"
         shutil.copytree(REPO / "_templates" / "drive", self.root)
         shutil.rmtree(self.root / "coach-template")
-        (self.root / "hub/me.txt").write_text("name: Alex Test\nslug: alex\nrole: head-coach\n")
+        (self.root / "hub/alex.me.txt").write_text("name: Alex Test\nslug: alex\nrole: head-coach\n")
 
     def tearDown(self):
         shutil.rmtree(self.tmp)

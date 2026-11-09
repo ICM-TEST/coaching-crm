@@ -1,4 +1,6 @@
 # Clients
-# The main list. Rows are never deleted. Status: new · active · left.
+# The main list. Rows are never deleted.
+"# Status: new · active · unallocated (their coach left: give them a new coach) · left."
+"# Columns after notes are the head coach's own details (scripts/clients.py details). Only the head coach sees them."
 
 id,name,phone,email,status,coach,since,notes

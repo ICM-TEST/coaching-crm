@@ -23,9 +23,10 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 
 | File | Columns | Writer |
 |---|---|---|
-| `me` (Doc) | `name`, `slug`, `role: head-coach` | setup |
-| `coaches` | **the head coach's list of coaches:** `number` (coach number, never reused) · `slug` · `code` · `name` · `phone` · `email` · `invoice_start` · `active` | `scripts/coaches.py` (add, leave); head coach for edits |
-| `clients` | **the head coach's list of clients:** `id` · `name` (full name, as printed on invoices) · `phone` (printed on invoices) · `email` · `status` · `coach` · `since` · `notes` | head coach |
+| `<slug>.me` (Doc) | the head coach's details: `name`, `slug`, `role: head-coach`. Every `.me` Doc is named after its person | setup |
+| `coaches` | **the head coach's list of coaches:** `number` (coach number, never reused) · `slug` · `code` · `name` · `phone` · `email` · `invoice_start` · `active` · `google_account` (what their folders are shared with) | `scripts/coaches.py` (add, leave); head coach for edits |
+| `clients` | **the head coach's list of clients:** `id` · `name` (full name, as printed on invoices) · `phone` (printed on invoices) · `email` · `status` (`new` · `active` · `unallocated`: their coach left · `left`) · `coach` (the last coach, while unallocated) · `since` · `notes` · then the head coach's own details, seen only here (`scripts/clients.py details`) | head coach; `clients.py import` |
+| `client-form responses` | the client form's answers, one column per question | Google Forms |
 | `client-history` | `date` · `client_id` · `change` · `reason` | head coach (append) |
 | `intake/YYYY-MM-DD` | intake proposal | head coach's Claude |
 | `bank/` | the bank's statements, exactly as the bank gives them: CSV or PDF, never changed | head coach (uploads) |
@@ -45,6 +46,7 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 | File | Columns | Writer |
 |---|---|---|
 | `business` (Doc) | everything on the invoice that's the same for every coach: trading name, website, bank details, the payment and sign-off wording, `invoice_number_format`, `currency_symbol`, `invoice_day`, `payment_terms` | head coach |
+| `client-form` (Doc) | `link:` the client form's link for new clients, which the head coach and every coach hand out | the head coach's Claude ([../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md)) |
 | `invoice-template/fonts/` | Inter font files for the invoices | head coach |
 | `billable-work` | `code` · `name` (as printed) · `unit` · `rate` · `billed` (`in advance`: can bill next month's sessions · `after`: the month past) | head coach |
 | `invoicing-runs` | `period` · `opened` · `due` · `status` | `runs.py open` |
@@ -57,7 +59,7 @@ Everything else in the folder comes from the head coach.
 
 | File | Holds | Writer |
 |---|---|---|
-| `me` | **generated from the coach's row in `hub/coaches`:** `name`, `slug`, `code`, `coach_number`, `phone`, `email` (printed on their invoices), `invoice_start`, `role: coach` | `build_lists.py` / every recon step |
+| `<slug>.me` (Doc) | **generated from the coach's row in `hub/coaches`:** `name`, `slug`, `code`, `coach_number`, `phone`, `email` (printed on their invoices), `invoice_start`, `role: coach` | `build_lists.py` / every recon step |
 | `invoice-lists/<month>` | **Output 1.** One run's invoices (format below) | invoice generator (coach), once, at issue |
 | `invoices/<period>/*.pdf` | **Output 2.** The PDFs the coach sends to clients. The `<period>/` folder is made by `runs.py open` (head coach) | invoice generator (coach), at issue |
 | `clients` | this coach's clients: `id` · `name` · `phone` · `email` · `status` · `since`. Updates by itself when the head coach assigns or moves a client. | `build_lists.py` after every main-list change, and again at every recon step |

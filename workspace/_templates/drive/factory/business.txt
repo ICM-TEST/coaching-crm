@@ -18,12 +18,12 @@ payment_terms: due on receipt
 Business
 
 Everything on an invoice that's the same for every coach. Only the head coach edits this.
-What changes per coach (their phone and email in the invoice header) lives in each coach's me.
+What changes per coach (their phone and email in the invoice header) lives in each coach's .me Doc (coach-<slug>/<slug>.me).
 Anything still in <angle brackets> is a placeholder: no invoice is issued until each one is filled in or left blank.
 
 - payment_instruction: {reference} is replaced with the invoice's number, so clients are asked to pay with it.
 - invoice_number_format: how the invoice number is printed; it's also the payment reference. {year} is the invoice year,
-  {coach} the coach's own number (coach_number in their me), {seq} the coach's running invoice number:
+  {coach} the coach's own number (coach_number in their .me Doc), {seq} the coach's running invoice number:
   2026-03-490. Unique across all coaches.
 - invoice_day: the day of the month invoices go out. Each month's invoicing run is due that day.
 - payment_terms: invoices are due on receipt, so the due date is the invoice date and days unpaid count from it.

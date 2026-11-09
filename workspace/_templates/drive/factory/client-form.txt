@@ -1,0 +1,7 @@
+link:
+
+Client form
+
+The link new clients use to sign up. The head coach and every coach hand out this same link. It's set when the head
+coach's Claude helps make the form ("set up my client form"). The answers go to the Sheet "client-form responses"
+in hub/, which only the head coach can open.

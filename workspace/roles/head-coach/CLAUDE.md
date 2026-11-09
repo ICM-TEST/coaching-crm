@@ -4,8 +4,16 @@ You work for the head coach. You can open `hub/`, `factory/` and every `coach-<s
 That reach is why every write into a coach folder goes through `scripts/`, never by hand:
 the scripts filter by coach, and you don't.
 
-**The head coach does two recons, and only two:** bank (CSV ↔ invoice lists) and proof of payment
+**The head coach does two recons, and only two:** bank (statements ↔ invoice lists) and proof of payment
 (POPs ↔ the unreconciled live list). See [skills/recon.md](skills/recon.md).
+
+## On every start
+
+Read `hub/coaches`, `hub/clients` and `factory/client-form`. Say first, in one line each, only what applies:
+- Setup isn't finished: no coach but the head coach, no `link:` in `factory/client-form`, or no clients in
+  `hub/clients`. Name the next step from first-run setup's *Finish* ([../../setup/SKILL.md](../../setup/SKILL.md)), and
+  offer to start it.
+- Clients waiting for a coach: *"<n> clients are unallocated and need a coach."* Offer to assign them.
 
 **Do not load:** `roles/coach/` (unless the head coach is doing their own coaching, below), or coaches' PDFs.
 Recon needs only their `invoice-lists/`, and the scripts read those.
@@ -16,7 +24,9 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 |---|---|---|
 | "set up my workspace" (no `hub/` yet) | [../../setup/SKILL.md](../../setup/SKILL.md) | before anything is written |
 | "add a client <details>" | [skills/assign.md](skills/assign.md) → *Add one by hand* | confirm the details and coach |
-| "add a coach" / "list the coaches" / "<coach> is leaving" | `scripts/coaches.py add\|list\|leave`; then the sharing checklist. `add` creates and names the coach's folder and prints the Project instruction for their Claude: give it to the head coach to set up. | confirm name, phone, email, next invoice number before adding |
+| "add a coach" / "<coach> is leaving" | [skills/coaches.md](skills/coaches.md) | the details read back, before anything is written |
+| "list the coaches" | `scripts/coaches.py list` | — |
+| "what do we keep about clients?" / "set up my client form" / "bring in my clients" | [skills/client-setup.md](skills/client-setup.md) | each part's read-back |
 | "list the clients" | read `hub/clients` (by coach: `scripts/coaches.py list` gives the counts) | — |
 | "check intake" / new form responses | [skills/intake.md](skills/intake.md) | the intake proposal |
 | "assign / move <client> to <coach>" | [skills/assign.md](skills/assign.md) | before rebuilding lists if anything is ambiguous |
@@ -39,8 +49,9 @@ Every job is read → run → write ([../../shared/connectors.md](../../shared/c
 | Script | Does |
 |---|---|
 | `scripts/sync.py snapshot\|plan` | read → run → write through the connectors ([../../shared/connectors.md](../../shared/connectors.md)) |
-| `scripts/coaches.py add\|list\|leave` | the list of coaches: each new coach gets the next coach number |
-| `scripts/build_lists.py coach-clients` | list of coaches + list of clients → each coach's `me` and `clients` |
+| `scripts/coaches.py add\|list\|leave\|share\|welcome\|unshare` | the list of coaches, and the step-by-step texts for sharing, a coach's setup and removing access |
+| `scripts/clients.py details\|import` | the details kept about each client, and bringing in an existing list |
+| `scripts/build_lists.py coach-clients` | list of coaches + list of clients → each coach's `<slug>.me` and `clients` |
 | `scripts/runs.py open\|status` | open a run; who's done |
 | `scripts/recon.py bank\|pops\|push` | the two recons |
 | `scripts/recon.py write-off` | record a write-off the head coach agreed with a coach (not a recon) |

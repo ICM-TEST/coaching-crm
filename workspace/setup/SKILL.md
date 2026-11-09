@@ -20,7 +20,6 @@ given: ask about "your bank" and "your invoices". The `<placeholders>` in the te
 5. **The price list:** each item as named on invoices, its price, its unit, and whether it's billed in advance (paid up
    front, so an invoice can include next month's sessions) or after (for the month past). Make a short code for each.
 6. **You:** full name, phone and email as printed on invoices, next invoice number. Do you coach? (Assume yes.)
-7. **Each other coach:** the same details. Ask "any more?" until they say no.
 
 There's no question about bank statements: the bank recon reads whatever the bank gives, CSV or PDF, when it runs.
 
@@ -36,10 +35,10 @@ Follow [../shared/connectors.md](../shared/connectors.md).
 2. Copy `_templates/drive/` into `work/`, leaving out `coach-template/` and `factory/invoice-template/fonts/`: the fonts
    come with the scripts, and uploading them through a connector is wasteful.
 3. Fill in `factory/business.txt` and `factory/billable-work.csv`, replacing every `<placeholder>` (a skipped one becomes
-   blank), and write `hub/me.txt`
+   blank), and write `hub/<slug>.me.txt`, which becomes the Doc `<slug>.me`
    (`name`, `slug`, `role: head-coach`).
-4. `python3 scripts/coaches.py --root <work> add --name … --phone … --email … --invoice-start …` for every coach, the head
-   coach first if they coach. Each gets the next coach number and their folder.
+4. If the head coach coaches: `python3 scripts/coaches.py --root <work> add --name … --phone … --email … --invoice-start …`.
+   They get coach number 01 and their own folder. Other coaches come after setup, one at a time (*Finish*).
 5. `python3 scripts/sync.py plan <work> --role head-coach --json`. Say how many steps it lists, then carry them out in
    order inside the folder from question 1, with a one-line progress note every so often. If a write fails, re-read what's on
    the drive and do only the steps still missing.
@@ -49,8 +48,11 @@ Follow [../shared/connectors.md](../shared/connectors.md).
 
 Tell them, in this order:
 - What was created, and anything that failed.
-- **Before any sharing, Ross reads the folder tree and [sharing-checklist.md](sharing-checklist.md).** You don't share anything
-  yourself.
-- Each coach's Project instruction, from `python3 scripts/coaches.py --root <work> instructions <slug>`. Ross pastes each into that coach's Project.
-- Clients come in through the Google Form, or say "add a client" for one at a time.
+- Their next steps, numbered, and offer to start the first one now. Each one, I guide you through step by step:
+  1. **Add your coaches**, one at a time: say "add a coach". For each, I give you the steps to share their folders with
+     them, and a step-by-step setup message to send them ([../roles/head-coach/skills/coaches.md](../roles/head-coach/skills/coaches.md)).
+  2. **Choose what you keep about each client**: say "what do we keep about clients?".
+  3. **Make your client form** for new clients, and get the link to give them: say "set up my client form".
+  4. **Bring in your current clients** from a list you already have: say "bring in my clients".
+  (2 to 4: [../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md).)
 - Bank statements: upload each one to `hub/bank/` as the bank gives it, CSV or PDF, then say "run recon".
