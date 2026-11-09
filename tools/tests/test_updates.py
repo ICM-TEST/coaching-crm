@@ -30,7 +30,7 @@ class Updates(unittest.TestCase):
         self.w = self.tmp / "work"
         shutil.copytree(REPO / "_templates/drive", self.w)
         shutil.rmtree(self.w / "coach-template")
-        (self.w / "factory/business.txt").write_text("trading_name: Example Coaching Co\nbank: Example Bank\n"
+        (self.w / "factory/business.txt").write_text("trading_name: Example Coaching Co\nbank: Example Bank\ncurrency_symbol: R\n"
                                                      "invoice_number_format: {year}-{coach}-{seq}\ninvoice_day: 24\n")
         bw = self.w / "factory/billable-work.csv"
         bw.write_text(bw.read_text() + "PVT,Private lesson,per lesson,350,after\nSQD,Group session,per session,180,in advance\n")
@@ -70,10 +70,11 @@ class Updates(unittest.TestCase):
 
     def recon(self, *lines):
         self.bank_n += 1
-        with (self.w / f"hub/bank/b{self.bank_n}.csv").open("w", newline="") as f:
+        (self.w / f"hub/bank/b{self.bank_n}.pdf").write_bytes(b"%PDF made-up statement")
+        with (self.w / f"hub/bank/lines/b{self.bank_n}.pdf.csv").open("w", newline="") as f:
             w = csv.writer(f)
-            w.writerow(["Date", "Description", "Amount", "Balance"])
-            w.writerows([["2026/10/27", d, a, "10000.00"] for d, a in lines])
+            w.writerow(["date", "description", "amount", "balance"])
+            w.writerows([["2026-10-27", d, a, ""] for d, a in lines])                  # a statement with no balance
         before = set((self.w / "hub/recon").glob("bank-*.csv"))
         self.run_ok("recon.py", "bank", "--month-end", "2026-10")
         new = (set((self.w / "hub/recon").glob("bank-*.csv")) - before).pop()

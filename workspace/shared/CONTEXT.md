@@ -7,8 +7,8 @@ files Google Docs, reached through the Google connectors: [connectors.md](connec
 
 1. Clients join through **one Google Form** owned by the head coach. Coaches hand out the fill-in link only.
 2. The head coach keeps the **main client list** and assigns each client to a coach.
-3. The head coach opens each month's **invoicing run**. Invoices go out on the **24th** (`invoice_day` in
-   `factory/business`) and are **due immediately**. Both settings can change.
+3. The head coach opens each month's **invoicing run**. Invoices go out on the business's **invoice day** (`invoice_day`
+   in `factory/business`, set at first-run setup) and are **due immediately**.
 4. Each coach keeps track of their lessons **their own way**. At the run, they invoice for work actually done.
    No one approves invoices. What's billable (no-shows, late cancellations) is each coach's own policy.
    **Once issued, an invoice is due** until it's paid or written off. While it's unpaid, the coach can update it through the generator.
@@ -17,7 +17,7 @@ files Google Docs, reached through the Google connectors: [connectors.md](connec
    generator inside the coach's Claude Project; it seals them, and the recon ignores and reports anything else.
 6. Every invoice pays into **the business bank account** (from `factory/`, never typed by a coach).
 7. **The head coach does two recons, and only two:**
-   - **Bank recon:** the bank CSV against the coaches' invoice lists. The month-end one waits until every coach's
+   - **Bank recon:** the bank statements (CSV or PDF) against the coaches' invoice lists. The month-end one waits until every coach's
      list for the run exists; follow-ups can run any time. Every payment it can't place is **verified by the head
      coach**: client money or not. Non-client money drops out. Client money it can't tie to an invoice goes on the
      **unreconciled live list**, which carries over from recon to recon.

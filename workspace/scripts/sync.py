@@ -2,7 +2,7 @@
 """Turn a job's changes in the working copy into Google connector steps (Drive, Sheets, Docs).
 
   sync.py snapshot <work>                                   before the job: remember the working copy as downloaded
-  sync.py plan <work> --role coach --coach coach-ayanda     after the job: the steps, in order, for Claude to carry out
+  sync.py plan <work> --role coach --coach coach-<slug>      after the job: the steps, in order, for Claude to carry out
   sync.py plan <work> --role head-coach [--json]
 
 In the working copy a Sheet is a .csv and a Doc a .txt (same folders, same names without the extension on the
@@ -61,8 +61,8 @@ def _csv_rows(text: str) -> list[list[str]]:
 def as_written(values: list[list[str]]) -> list[list[str]]:
     """The cells exactly as the Sheets connector must be given them.
 
-    The connector treats what it writes as if a person typed it: 0820000003 loses its zero, a reference like 2026-01-5
-    becomes the date 2026-01-05 (which breaks the list's seal), +27 82 000 0003 becomes #ERROR!, and a name starting
+    The connector treats what it writes as if a person typed it: a phone number loses its leading zero, a reference like 2026-01-5
+    becomes the date 2026-01-05 (which breaks the list's seal), a phone starting with + becomes #ERROR!, and a name starting
     with = runs as a formula. A leading apostrophe on every filled cell makes Sheets keep the rest as plain text. The
     apostrophe isn't part of the value and doesn't come back in the CSV export. Tested on real Sheets, 2026-11-06.
     """

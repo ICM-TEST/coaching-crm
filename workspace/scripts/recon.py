@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """The head coach's two recons — and only two — plus the two records that aren't recons.
 
-  Recon 1, bank:  bank CSV  <->  the coaches' invoice lists
-    recon.py --root <drive> bank [--month-end 2026-11] [--force]
+  Recon 1, bank:  bank statements (read into hub/bank/lines/)  <->  the coaches' invoice lists
+    recon.py --root <drive> bank [--month-end 2026-11] [--force] [--skip-balance-check]
   Recon 2, POP:   proofs of payment  <->  the unreconciled live list (nothing else)
     recon.py --root <drive> pops
   Either recon, after the head coach has decided every '?':
     recon.py --root <drive> push hub/recon/bank-2026-12-05.md
 
   Not a recon — a record of what the head coach agreed with a coach:
-    recon.py --root <drive> write-off BN-0241 --reason "moved away"
+    recon.py --root <drive> write-off <invoice number> --reason "<reason>"
 
 Overpayments: the invoice is paid and the excess is recorded as an overpayment, listed for the
 head coach to handle in their own accounting system. This system keeps no client credit.
@@ -32,8 +32,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from crm.books import (ALLOC_COLUMNS, LEDGER_COLUMNS, REVIEW_COLUMNS, Books, build_client_lists,  # noqa: E402
-                       build_coach_views, build_hub_views, build_me_files, drive_settings)
-from crm.common import (ZERO, Drive, append_rows, fmt, money, read_sheet, read_table,  # noqa: E402
+                       build_coach_views, build_hub_views, build_me_files, drive_index)
+from crm.common import (ZERO, Drive, append_rows, fmt, iso_date, money, read_sheet, read_table,  # noqa: E402
                         set_sheet_meta, today, write_sheet)
 from runs import gate  # noqa: E402
 
@@ -47,37 +47,134 @@ DECISIONS = {"bank": {"accept", "unreconciled", "non-client", "hold"}, "pop": {"
 SAFE_NOTES = {"overpayment": "overpaid: head coach handles the excess", "write-off": "write-off confirmed"}
 
 
-# ---------- importing the bank CSVs ----------
+# ---------- reading the bank statements ----------
+# Statements go in hub/bank/ exactly as the bank gives them, CSV or PDF, from any bank. The head coach's Claude reads
+# each new one into a Sheet of the same name in hub/bank/lines/, in one layout for every bank (LINE_COLUMNS), and the
+# recon reads only those. Every statement is checked against its running balance, so a misread or missing line stops
+# the recon before anything is recorded.
 
-def import_bank(drive: Drive) -> int:
-    s = drive_settings(drive)
-    cols = {k: s.get(f"bank_{k}_column", "") for k in ("date", "amount", "description", "balance")}
-    date_format = s.get("bank_date_format", "%Y/%m/%d")
-    known = {e["eft_id"] for e in read_table(drive.hub / "eft-ledger.csv")}
-    new_rows = []
-    for path in sorted((drive.hub / "bank").glob("*.csv")):
-        seen = Counter()
-        with path.open(newline="", encoding="utf-8-sig") as f:
-            for raw in csv.DictReader(f):
-                amount = money(raw.get(cols["amount"]))
-                if amount <= ZERO:
-                    continue                                    # money out: not client money
-                date = dt.datetime.strptime(raw[cols["date"]].strip(), date_format).date().isoformat()
-                desc = " ".join(raw.get(cols["description"], "").split())
-                balance = raw.get(cols["balance"], "") if cols["balance"] else ""
-                key = f"{date}|{fmt(amount)}|{desc}|{balance}"
-                seen[key] += 1                                  # same line twice in one export = two payments
-                eft_id = "E" + hashlib.sha1(f"{key}|{seen[key]}".encode()).hexdigest()[:10]
-                if eft_id in known:
-                    continue                                    # overlapping export: already in the ledger
-                known.add(eft_id)
-                new_rows.append({"eft_id": eft_id, "date": date, "amount": fmt(amount), "description": desc,
-                                 "source": path.name})
+LINE_COLUMNS = ["date", "description", "amount", "balance"]
+PLAIN_NUMBER = re.compile(r"-?\d+(\.\d{1,2})?")
+ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+class StatementProblem(Exception):
+    pass
+
+
+def statements(drive: Drive) -> tuple[list[str], dict[str, Path]]:
+    """Every statement on the drive, by file name, and the lines already read from each, by statement file name."""
+    bank = drive.hub / "bank"
+    local = {p.name for p in bank.iterdir() if p.is_file() and not p.name.startswith(".")} if bank.is_dir() else set()
+    listed = {k[len("hub/bank/"):] for k in drive_index(drive.root) if k.startswith("hub/bank/") and k.count("/") == 2}
+    lines_dir = bank / "lines"
+    lines = {p.name[:-4]: p for p in sorted(lines_dir.glob("*.csv"))} if lines_dir.is_dir() else {}
+    return sorted((local | listed) - {"README.txt"}), lines
+
+
+def _is_date(value: str) -> bool:
+    try:
+        return bool(ISO_DATE.fullmatch(value)) and bool(dt.date.fromisoformat(value))
+    except ValueError:
+        return False
+
+
+def check_lines(name: str, rows: list[dict]) -> list[str]:
+    """Problems with one statement's lines: a missing column, or a value not in the one layout."""
+    where = f"hub/bank/lines/{name}"
+    missing = [c for c in LINE_COLUMNS if rows and c not in rows[0]]
+    if missing:
+        return [f"{where}: no column {', '.join(missing)} (it needs {', '.join(LINE_COLUMNS)})"]
+    problems = []
+    for n, r in enumerate(rows, 1):
+        d, a, b = ((r.get(c) or "").strip() for c in ("date", "amount", "balance"))
+        if not _is_date(d):
+            problems.append(f"{where} line {n}: date '{d}' isn't YYYY-MM-DD")
+        if not PLAIN_NUMBER.fullmatch(a):
+            problems.append(f"{where} line {n}: amount '{a}' isn't a plain number (money in 1400.00, money out -85.00)")
+        if b and not PLAIN_NUMBER.fullmatch(b):
+            problems.append(f"{where} line {n}: balance '{b}' isn't a plain number")
+    return problems
+
+
+def balance_break(rows: list[dict]) -> int | None:
+    """None if every balance follows from the line before it (banks list oldest or newest first), else the first
+    line, counted as written, where it doesn't."""
+    def first_break(seq):
+        return next((i for i in range(1, len(seq))
+                     if money(seq[i]["balance"]) != money(seq[i - 1]["balance"]) + money(seq[i]["amount"])), None)
+    forward = first_break(rows)
+    return None if forward is None or first_break(rows[::-1]) is None else forward + 1
+
+
+def import_bank(drive: Drive, check_balances: bool = True) -> tuple[int, list[str], list[str]]:
+    """New money-in lines into the ledger. Returns (lines added, what was read from each new statement, warnings)."""
+    names, read = statements(drive)
+    unread = [n for n in names if n not in read]
+    if unread:
+        raise StatementProblem("these statements haven't been read into hub/bank/lines/ yet: " + ", ".join(unread)
+                               + ". Read each one first (roles/head-coach/skills/recon.md, Read new statements).")
+    tables = {name: read_table(path) for name, path in read.items()}
+    problems = [p for name, rows in tables.items() for p in check_lines(name, rows)]
+    check = {}
+    for name, rows in tables.items():
+        if problems:
+            break
+        if rows and all((r.get("balance") or "").strip() for r in rows):
+            line = balance_break(rows)
+            if line and check_balances:
+                problems.append(f"hub/bank/lines/{name} line {line}: the balance doesn't follow from the line before. "
+                                f"A line is misread or missing: read that part of {name} again.")
+            check[name] = "balance check SKIPPED" if line else "every balance checked"
+        else:
+            check[name] = "no running balance: compare the money-in total with the statement"
+    if problems:
+        raise StatementProblem("\n  ".join(problems))
+
+    ledger = read_table(drive.hub / "eft-ledger.csv")
+    known = {e["eft_id"] for e in ledger}
+    sources = {e.get("source", "") for e in ledger}
+    same_day = defaultdict(list)                           # (date, amount) -> payments, to spot one read twice
+    for e in ledger:
+        same_day[(iso_date(e["date"]), fmt(money(e["amount"])))].append(e)
+    new_rows, report, warnings = [], [], []
+    for name, rows in tables.items():
+        seen, added = Counter(), 0
+        here = {(r["date"].strip(), fmt(money(r["amount"])), " ".join(r["description"].split())) for r in rows}
+        for r in rows:
+            amount = money(r["amount"])
+            if amount <= ZERO:
+                continue                                    # money out: not client money
+            date, desc = r["date"].strip(), " ".join(r["description"].split())
+            balance = fmt(money(r["balance"])) if (r.get("balance") or "").strip() else ""
+            key = f"{date}|{fmt(amount)}|{desc}|{balance}"
+            seen[key] += 1                                  # the same line twice in one statement = two payments
+            eft_id = "E" + hashlib.sha1(f"{key}|{seen[key]}".encode()).hexdigest()[:10]
+            if eft_id in known:
+                continue                                    # overlapping statements: already in the ledger
+            twin = next((e for e in same_day[(date, fmt(amount))] if e.get("source") != name
+                         and (iso_date(e["date"]), fmt(money(e["amount"])), e["description"]) not in here), None)
+            if twin:
+                warnings.append(f"Possible double: {name} has {fmt(amount)} on {date} ('{desc}'), and {twin['source']} "
+                                f"had the same amount that day ('{twin['description']}'). If it's the same payment, "
+                                f"decide it non-client so it isn't counted twice.")
+            row = {"eft_id": eft_id, "date": date, "amount": fmt(amount), "description": desc, "source": name}
+            known.add(eft_id)
+            same_day[(date, row["amount"])].append(row)
+            new_rows.append(row)
+            added += 1
+        if added or name not in sources:
+            ins = [money(r["amount"]) for r in rows if money(r["amount"]) > ZERO]
+            outs = [money(r["amount"]) for r in rows if money(r["amount"]) < ZERO]
+            dates = sorted(r["date"].strip() for r in rows)
+            span = f"{dates[0]} to {dates[-1]}" if dates else "no lines"
+            report.append(f"{name}: {len(rows)} lines, {span}, money in {fmt(sum(ins, ZERO))} ({len(ins)}), "
+                          f"money out {fmt(sum(outs, ZERO))} ({len(outs)}); {check[name]}")
     append_rows(drive.hub / "eft-ledger.csv", LEDGER_COLUMNS, new_rows)
-    return len(new_rows)
+    return len(new_rows), report, warnings
 
 
-# ---------- recon 1: the bank CSV against the invoice lists ----------
+# ---------- recon 1: the bank statements against the invoice lists ----------
 
 def _norm(text: str) -> str:
     return re.sub(r"[^A-Z0-9]", "", (text or "").upper())
@@ -201,7 +298,7 @@ class Matcher:
                   note="client money → unreconciled (live list) · not client money → non-client · or pick an invoice")
 
 
-def bank(root, month_end: str | None, force: bool) -> int:
+def bank(root, month_end: str | None, force: bool, check_balances: bool = True) -> int:
     drive = Drive(root)
     if month_end:
         done, missing = gate(drive, month_end)
@@ -209,7 +306,11 @@ def bank(root, month_end: str | None, force: bool) -> int:
             print(f"GATE: not complete — {month_end} invoicing: {len(done)} of {len(done) + len(missing)} done.")
             print("Not done: " + ", ".join(c["name"] for c in missing))
             return 3
-    added = import_bank(drive)
+    try:
+        added, read, warnings = import_bank(drive, check_balances)
+    except StatementProblem as e:
+        print(f"Refused: {e}")
+        return 4
     books = Books(drive)
     m = Matcher(books)
     efts = books.open_efts()
@@ -237,15 +338,16 @@ def bank(root, month_end: str | None, force: bool) -> int:
                + "".join(f"- {conf or 'other'}: {cnt}\n" for conf, cnt in sorted(by_conf.items()))
                + f"\nDecisions needed: {undecided} (rows with ?)\n"
                + (f"\nProofs of payment waiting for the POP recon: {len(books.pops_waiting())}\n" if books.pops_waiting() else ""))
-    problems = "".join(f"⚠ {p}\n" for p in books.problems)
-    notes = (gate_note + summary + problems).splitlines() + [
+    read_note = ("Read from new statements:\n" + "".join(f"- {r}\n" for r in read) + "\n") if read else ""
+    problems = "".join(f"⚠ {p}\n" for p in warnings + books.problems)
+    notes = (gate_note + read_note + summary + problems).splitlines() + [
         "Pick each decision: accept (the invoice shown, or one you choose by changing coach/client_id/invoice/amount) · "
         "unreconciled (client money, can't place it yet: live list) · non-client (not client money) · hold (next time)."]
     write_sheet(path, PROPOSAL_COLUMNS, m.rows, title=f"Bank recon {path.stem}", notes=[n for n in notes if n.strip()],
                 meta={"type": "bank", "status": "proposed", "created": today(), "month_end": month_end or "",
                       "dropdown": "decision=?|" + "|".join(sorted(DECISIONS["bank"]))})
     print(f"Proposal: {path.relative_to(drive.root)}")
-    print(summary + problems)
+    print(read_note + summary + problems)
     return 0
 
 
@@ -503,15 +605,16 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", required=True)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    b = sub.add_parser("bank", help="recon 1: bank CSV against the invoice lists")
+    b = sub.add_parser("bank", help="recon 1: bank statements against the invoice lists")
     b.add_argument("--month-end"); b.add_argument("--force", action="store_true")
+    b.add_argument("--skip-balance-check", action="store_true", help="only when the head coach has checked the totals")
     sub.add_parser("pops", help="recon 2: proofs of payment against the unreconciled list")
     q = sub.add_parser("push"); q.add_argument("proposal")
     w = sub.add_parser("write-off"); w.add_argument("invoice"); w.add_argument("--amount")
     w.add_argument("--reason", default="")
     a = ap.parse_args()
     sys.exit({
-        "bank": lambda: bank(a.root, a.month_end, a.force),
+        "bank": lambda: bank(a.root, a.month_end, a.force, not a.skip_balance_check),
         "pops": lambda: pops(a.root),
         "push": lambda: push(a.root, a.proposal),
         "write-off": lambda: write_off(a.root, a.invoice, a.amount, a.reason),

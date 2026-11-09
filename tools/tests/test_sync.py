@@ -111,14 +111,17 @@ class Sync(unittest.TestCase):
                                                                                      "qty": 2}]}]}))
         run("issue.py", "--root", str(self.work), "--coach-dir", "coach-riley", "--period", "2026-10",
             "--drafts", str(drafts))
-        with (self.work / "hub/bank/2026-10-28.csv").open("w", newline="") as f:
-            w = csv.writer(f)
-            w.writerow(["Date", "Description", "Amount", "Balance"])
-            w.writerow(["2026/10/27", "2026-01-490 ANN", "700.00", "10700.00"])
         run("sync.py", "snapshot", str(self.work))
+        index = self.work / ".drive-index.csv"                                             # the statement: listed, not downloaded
+        index.write_text((index.read_text() if index.exists() else "path,size\n") + "hub/bank/2026-10-28.pdf,5120\n")
+        with (self.work / "hub/bank/lines/2026-10-28.pdf.csv").open("w", newline="") as f:   # what Claude read from it
+            w = csv.writer(f)
+            w.writerow(["date", "description", "amount", "balance"])
+            w.writerow(["2026-10-27", "2026-01-490 ANN", "700.00", "10700.00"])
         run("recon.py", "--root", str(self.work), "bank", "--month-end", "2026-10")
         ops = self.ops("--role", "head-coach")
-        proposal = next(o for o in ops if o["op"] == "create_sheet")
+        self.assertIn(("create_sheet", "hub/bank/lines/2026-10-28.pdf"), [(o["op"], o["path"]) for o in ops])
+        proposal = next(o for o in ops if o["op"] == "create_sheet" and o["path"].startswith("hub/recon/bank-"))
         self.assertTrue(proposal["path"].startswith("hub/recon/bank-"))
         self.assertEqual(proposal["dropdown"]["column"], "decision")                        # Morgan picks from a list
         self.assertIn(("append", "hub/eft-ledger"), [(o["op"], o["path"]) for o in ops])

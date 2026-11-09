@@ -425,6 +425,3 @@ def build_hub_views(drive: Drive, books: Books, as_of: str | None = None) -> Non
                         "coach": a["coach"], "client_id": a["client_id"], "invoice": a.get("invoice", ""),
                         "amount": a["amount"]} for a in books.overpayments()])])
 
-
-def drive_settings(drive: Drive) -> dict:
-    return frontmatter(drive.hub / "settings.txt")

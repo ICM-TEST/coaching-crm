@@ -14,7 +14,7 @@ an invoice list but not on `unpaid`, it's settled. That's all there is to know. 
 
 ## "They say they've paid"
 The coach asks the client for proof of payment and uploads it to their `pops/` folder, with the invoice number in the
-file name if they know it (for example `2026-03-490 Peter.pdf`). The head coach's POP recon picks it up.
+file name if they know it (for example `<invoice number> <client name>.pdf`). The head coach's POP recon picks it up.
 
 ## Write-offs, overpayments, credits, refunds
 Not something you record or write. The coach agrees write-offs with the head coach directly; overpayments, credits and

@@ -24,11 +24,21 @@ CENT = Decimal("0.01")
 # ---------- money and dates ----------
 
 def money(value) -> Decimal:
-    """Tolerant of how a Sheet may hand a number back: R1,440.00, 1440, 1 440.00."""
+    """Tolerant of how a Sheet or a statement may write a number: 1,440.00, 1440, 1 440.00, a currency symbol or code
+    in front, or (85.00) for money out."""
     if value is None or str(value).strip() == "":
         return ZERO
-    text = str(value).replace("R", "").replace(" ", "").replace(",", "").replace(" ", "")
+    raw = str(value).strip()
+    text = re.sub(r"[^\d.\-]", "", raw)
+    if raw.startswith("(") and raw.endswith(")") and not text.startswith("-"):
+        text = "-" + text
     return Decimal(text).quantize(CENT, rounding=ROUND_HALF_UP)
+
+
+def is_placeholder(value) -> bool:
+    """A template value nobody has filled in yet: <like this>."""
+    v = str(value or "").strip()
+    return v.startswith("<") and v.endswith(">")
 
 
 def fmt(amount: Decimal) -> str:
@@ -41,7 +51,7 @@ def today() -> str:
 
 
 def iso_date(value: str) -> str:
-    """YYYY-MM-DD, also from the day-first forms a Sheet in South Africa may show (24/10/2026, 2026/10/24)."""
+    """YYYY-MM-DD, also from the forms a Sheet may show, depending on its locale (24/10/2026, 2026/10/24)."""
     v = str(value).strip()
     for pattern in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
         try:

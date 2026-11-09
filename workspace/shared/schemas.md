@@ -1,6 +1,6 @@
 # schemas — every data file, its columns, and its one writer
 
-Every **list is a Google Sheet** and every **other data file a Google Doc**; PDFs, POPs, bank CSVs and fonts stay files.
+Every **list is a Google Sheet** and every **other data file a Google Doc**; PDFs, POPs, bank statements and fonts stay files.
 They're reached through the Google connectors, as read → run → write ([connectors.md](connectors.md)). In the working
 copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no extension.
 
@@ -24,12 +24,12 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 | File | Columns | Writer |
 |---|---|---|
 | `me` (Doc) | `name`, `slug`, `role: head-coach` | setup |
-| `settings` (Doc) | bank CSV column names | setup |
 | `coaches` | **the head coach's list of coaches:** `number` (coach number, never reused) · `slug` · `code` · `name` · `phone` · `email` · `invoice_start` · `active` | `scripts/coaches.py` (add, leave); head coach for edits |
 | `clients` | **the head coach's list of clients:** `id` · `name` (full name, as printed on invoices) · `phone` (printed on invoices) · `email` · `status` · `coach` · `since` · `notes` | head coach |
 | `client-history` | `date` · `client_id` · `change` · `reason` | head coach (append) |
 | `intake/YYYY-MM-DD` | intake proposal | head coach's Claude |
-| `bank/*.csv` | the bank's own export, untouched | head coach |
+| `bank/` | the bank's statements, exactly as the bank gives them: CSV or PDF, never changed | head coach (uploads) |
+| `bank/lines/<statement file name>` | **the lines read from that statement**, one layout for every bank: `date` (YYYY-MM-DD) · `description` (as printed) · `amount` (a plain number: money in positive, money out negative) · `balance` (after the line, as printed, or blank if the statement has none). One row per transaction, in the statement's order | the head coach's Claude, once per statement |
 | `eft-ledger` | `eft_id` · `date` · `amount` · `description` · `source` | `recon.py` (append) |
 | `eft-reviews` | `eft_id` · `date` · `verdict` (`client` / `non-client`) · `recon` | `recon.py` (append): the head coach's verdict on money the recon couldn't place |
 | `all-invoices` | the head coach's **own copy** of every sealed invoice row: `coach` · `list` · `seal` · `archived` · then the invoice-list columns. **The books work from this copy**, so a coach's list changed or deleted later loses nothing | recon steps (append) |
@@ -44,9 +44,9 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 
 | File | Columns | Writer |
 |---|---|---|
-| `business` (Doc) | everything on the invoice that's the same for every coach: trading name, website, bank details, the payment and sign-off wording, `invoice_number_format`, `invoice_day` (24), `payment_terms` | head coach |
-| `invoice-template/fonts/` | Inter font files, so invoices match the business's own | head coach |
-| `billable-work` | `code` · `name` (as printed) · `unit` · `rate` · `billed` (`in advance` for group sessions, `after` for the rest) | head coach |
+| `business` (Doc) | everything on the invoice that's the same for every coach: trading name, website, bank details, the payment and sign-off wording, `invoice_number_format`, `currency_symbol`, `invoice_day`, `payment_terms` | head coach |
+| `invoice-template/fonts/` | Inter font files for the invoices | head coach |
+| `billable-work` | `code` · `name` (as printed) · `unit` · `rate` · `billed` (`in advance`: can bill next month's sessions · `after`: the month past) | head coach |
 | `invoicing-runs` | `period` · `opened` · `due` · `status` | `runs.py open` |
 | `invoice-rules`, `invoice-template/` | *designed in the invoice-design stage* | head coach |
 
@@ -68,18 +68,18 @@ Everything else in the folder comes from the head coach.
 
 ```
 ---
-coach: ayanda
+coach: <slug>
 period: 2026-11
 issued: 2026-12-01
 ---
 
-# Invoice list — Ayanda — 2026-11
+# Invoice list — <name> — 2026-11
 
 | number | date | client_id | client | payer | reference | amount | applies_to | pdf | pdf_sha |
 ```
 
 - `payer`: who pays, if not the client (a parent, for example). Recon matches bank lines on this name too.
-- `number`: the internal id, with the coach's code (`RY-2026-0490`). Unique across all coaches.
+- `number`: the internal id, with the coach's code (`<coach code>-2026-0490`). Unique across all coaches.
 - `reference`: the printed invoice number, which is also the payment reference: `2026-03-490` (year-coach number-invoice
   number). Unique across coaches. Recon still never pays on a reference that fits two clients.
 - **An updated invoice** is a row in a later list (`2026-10-2`) with the same `number` and `reference`, the new `amount`, and

@@ -48,4 +48,4 @@ Every job is read → run → write ([../../shared/connectors.md](../../shared/c
 ## Notifying coaches
 
 Leave a Drive comment on the coach's file that @-mentions them (Google emails them). The text names the file
-and date only, for example *"@Ben unpaid list updated 5 Dec"*, never a client or an amount.
+and date only, for example *"@<coach> unpaid list updated <date>"*, never a client or an amount.

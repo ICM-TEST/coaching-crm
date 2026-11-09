@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """The head coach's list of coaches: add a coach, see the list, mark a coach as left.
 
-  coaches.py --root <drive> add --name "Ayanda Dlamini" --phone "+27..." --email ayanda@... [--invoice-start 212]
+  coaches.py --root <drive> add --name "<full name>" --phone "<phone>" --email <email> [--invoice-start <next invoice number>]
   coaches.py --root <drive> list
-  coaches.py --root <drive> leave ayanda
-  coaches.py --root <drive> instructions ayanda        (or: instructions head-coach)
+  coaches.py --root <drive> leave <slug>
+  coaches.py --root <drive> instructions <slug>         (or: instructions head-coach)
 
 `add` gives the coach the next coach number (01, 02, …; never reused), creates and names their folder from the
 template, writes their me Doc and client list Sheet, and prints the Project instruction for that coach's Claude: it names

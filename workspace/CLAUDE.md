@@ -7,7 +7,7 @@ Google Shared Drive. Nothing in this repo is client data, and nothing you do may
 ## Who are you working for?
 
 Everyone's Claude has this same public GitHub repo attached, whole and read-only. **`workspace/` is yours: you work only from here.** The repo's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. Every path in these rules is inside `workspace/`, so `setup/` always means `workspace/setup/`. **Your Claude Project's instruction names who you work for**, for example
-*"You are the Claude for Ayanda Dlamini, coach 02 … Data: coach-ayanda/ and factory/ in Google Drive"*. The head coach's Claude makes that
+*"You are the Claude for <name>, coach <number> … Data: coach-<slug>/ and factory/ in Google Drive"*. The head coach's Claude makes that
 instruction when it adds the coach (`scripts/coaches.py add`, or `instructions <slug>` to show it again).
 
 Before anything else, **check the name against what you can open** in Google Drive (the Shared Drive, or a shared folder standing in for it). Drive sharing is the real
@@ -45,7 +45,7 @@ script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 
 ## The rules that never bend
 
 0. **Two and two.** A coach's Claude produces two things per invoicing run, and nothing else: the run's
-   invoice list and its PDFs. The head coach's Claude does two recons, and nothing else: bank (CSV ↔ invoice lists)
+   invoice list and its PDFs. The head coach's Claude does two recons, and nothing else: bank (statements ↔ invoice lists)
    and proof of payment (POPs ↔ the unreconciled list). There is no third way to tie a payment to an invoice.
 1. **Permissions are the lock, not this file.** If Drive won't open something, it isn't yours. Never ask for access or look for a way around it.
 2. **One writer per file.** Each file's writer is in [shared/schemas.md](shared/schemas.md). Never write a file your role doesn't own.

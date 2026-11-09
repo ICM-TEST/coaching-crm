@@ -26,9 +26,10 @@ website: www.example-coaching.test
 account_holder: EXCO
 bank: Example Bank
 branch_code: "000001"
-account_type: Current Account
+account_type: Business Account
 account_number: "1234567890"
-payment_instruction: "Please EFT the above amount, using {reference} as your reference:"
+currency_symbol: R
+payment_instruction: "Please pay the above amount by bank transfer, using {reference} as your reference:"
 pop_request: "Please send your coach the POP once paid."
 thanks: "Thank you."
 sign_off: The Example Coaching Team
@@ -62,7 +63,7 @@ class Issue(unittest.TestCase):
         (self.root / "coach-template").rename(self.root / "coach-riley")
         (self.root / "factory/business.txt").write_text(BUSINESS)
         bw = self.root / "factory/billable-work.csv"
-        bw.write_text(bw.read_text() + "SQD60,Group Squad,per session,240,in advance\n"
+        bw.write_text(bw.read_text() + "SQD60,Group Session,per session,240,in advance\n"
                                        "PVT,Private lesson,per lesson,350,after\n")
         (self.root / "coach-riley/me.txt").write_text("---\nname: Riley\nslug: riley\ncode: RY\nrole: coach\n"
                                                       "phone: \"+27820000001\"\nemail: riley@example.test\n"
@@ -115,7 +116,7 @@ class Issue(unittest.TestCase):
         first = pdf_text(first_pdf)
         for printed in (b"using 2026-07-490 as your reference", b"+27820000001", b"riley@example.test",   # coach
                         b"Ann Example", b"+27820000002",                                                # client
-                        b"Group Squad - November", b"R1,440.00", b"2026-07-490"):
+                        b"Group Session - November", b"R1,440.00", b"2026-07-490"):
             self.assertIn(printed, first)
         for weight in (b"Inter-Regular", b"Inter-Medium", b"Inter-SemiBold", b"Inter-Bold"):
             self.assertIn(weight, first)                                                # the business's own font
@@ -158,7 +159,7 @@ class Issue(unittest.TestCase):
         out = self.issue(bad, ok=(1,))
         for expected in ("C0009 isn't on your client list", "'XYZ' isn't in factory/billable-work",
                          "not after 2026-10 (Private lesson is billed for the month past)",
-                         "not after 2026-11 (Group Squad is billed in advance", "two invoices in this run", "quantity must be above zero"):
+                         "not after 2026-11 (Group Session is billed in advance", "two invoices in this run", "quantity must be above zero"):
             self.assertIn(expected, out)
         self.assertFalse(list((self.root / "coach-riley/invoice-lists").glob("2026-*.csv")), "nothing issued")
         out = self.issue({"updates": [{"invoice": "RY-2026-0999", "lines": [{"code": "PVT", "month": "2026-10", "qty": 1}]}]}, ok=(1,))
@@ -170,6 +171,12 @@ class Issue(unittest.TestCase):
         me = self.root / "coach-riley/me.txt"
         me.write_text(me.read_text().replace("coach_number: 7\n", ""))
         self.assertIn("has no coach_number", self.issue(self.DRAFTS, ok=(1,)))
+
+    def test_an_unfinished_business_doc_issues_nothing(self):
+        shutil.copy(REPO / "_templates/drive/factory/business.txt", self.root / "factory/business.txt")
+        out = self.issue(self.DRAFTS, "--dry-run", ok=(1,))
+        self.assertIn("isn't finished", out)                     # the template's <placeholders> are still there
+        self.assertIn("invoice_day", out)
 
     def test_nothing_to_bill_still_marks_the_run_done(self):
         self.issue({"invoices": []})

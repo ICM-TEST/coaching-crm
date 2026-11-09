@@ -1,7 +1,6 @@
 Invoice rules
 
-Every coach's invoices are the business's own invoice, exactly. The layout is fixed in scripts/issue.py, measured
-from the business's existing invoice. The only thing that changes from coach to coach is the coach's phone and email
+Every coach's invoices use one layout, fixed in scripts/issue.py. The only thing that changes from coach to coach is the coach's phone and email
 in the header. Coaches can read this file; only the head coach changes it. A coach's Claude never makes an invoice any
 other way.
 
@@ -12,9 +11,9 @@ What's on every invoice, top to bottom
 | Title | INVOICE (left) · trading name (right) | factory/business |
 | Header | trading name · website · the coach's phone · the coach's email | business, the coach's me |
 | Bill-to box | BILL TO: the client's full name and phone · INVOICE # · ISSUED · DUE | clients; the generator |
-| Items | ITEM · PRICE · QUANTITY · AMOUNT. One row per item per month, e.g. *Group Squad - November × 4* | the coach's draft × factory/billable-work |
+| Items | ITEM · PRICE · QUANTITY · AMOUNT. One row per item per month, e.g. *<item> - November × 4* | the coach's draft × factory/billable-work |
 | Totals | Subtotal · Total · Amount Due | the generator |
-| Payment Instruction | the business's EFT wording, asking the client to use the invoice number as their reference, then account holder, bank, branch, account | business |
+| Payment Instruction | the business's payment wording, asking the client to use the invoice number as their reference, then account holder, bank, branch, account | business |
 | Sign-off | POP request · thank you · team sign-off | business |
 
 Font: Inter (from invoice-template/fonts/), black and grey on white. No VAT line while not VAT-registered.
@@ -28,17 +27,16 @@ Numbers and the payment reference
 - Invoice number: each coach's own running sequence, carried on from their old app (invoice_start in me).
   The generator gives out the next number. Coaches never choose one.
 - The bank recon recognises the reference with or without the year and dashes: 2026-03-490, 2026 03 490, 03-490.
-- Behind the scenes each invoice also gets an id with the coach's code (RY-2026-0490). If a reference ever fits more
+- Behind the scenes each invoice also gets an id with the coach's code (<coach code>-2026-0490). If a reference ever fits more
   than one client, the recon asks the head coach instead of guessing.
-- The invoice asks clients to use it: the payment instruction reads *"…at your earliest convenience, using
-  2026-03-490 as your reference:"* ({reference} in payment_instruction in business). This is the one wording
-  change from the business's earlier invoices.
+- The invoice asks clients to use it: payment_instruction in business contains {reference}, which the generator
+  replaces with the invoice number.
 
 Rules
 
-1. One invoice per client per run. Group sessions are billed in advance (up to next month); everything else is
-   billed for the month past. Each item's billed setting in billable-work decides which.
-2. Dated the run's date (invoice_day, the 24th), due the same day.
+1. One invoice per client per run. Each item's billed setting in billable-work decides when it's billed: in advance
+   (up to next month) or after (the month past).
+2. Dated the run's date (invoice_day in business), due the same day.
 3. Items and prices come only from factory/billable-work. An item that isn't there can't be billed.
 4. Never edit an issued invoice by hand. While it's unpaid, the coach updates it through the generator: same number and date, new PDF and
    list. Once it's paid it stays as it is, and the coach adjusts the client's future invoices. There are no credit notes.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The invoice generator: a coach's two outputs, made in one step.
 
-  issue.py --root <drive> --coach-dir coach-ayanda --period 2026-11 --drafts drafts.json --dry-run
-  issue.py --root <drive> --coach-dir coach-ayanda --period 2026-11 --drafts drafts.json
+  issue.py --root <drive> --coach-dir coach-<slug> --period 2026-11 --drafts drafts.json --dry-run
+  issue.py --root <drive> --coach-dir coach-<slug> --period 2026-11 --drafts drafts.json
 
 Run by the coach's Claude. Needs only the coach's folder and factory/. Rules: factory/invoice-rules.md.
 Every invoice is the business's own layout; only the coach's phone and email change from coach to coach.
@@ -25,7 +25,7 @@ Otherwise it writes the PDFs to invoices/<period>/ first, then the run's list to
 
 Through the Google Drive connector (from anywhere, a phone included), --root is a working copy in Claude's own
 workspace, not the drive itself:
-  issue.py --coach-dir coach-ayanda --needs        which drive files to download into the working copy
+  issue.py --coach-dir coach-<slug> --needs        which drive files to download into the working copy
   … run as above against the working copy …        it ends by listing what to upload, in order
 """
 from __future__ import annotations
@@ -41,12 +41,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from crm.books import GENERATOR, LIST_COLUMNS, file_hash, invoice_lists, list_seal  # noqa: E402
-from crm.common import ZERO, fmt, frontmatter, money, read_sections, read_table, write_sheet  # noqa: E402
+from crm.common import ZERO, fmt, frontmatter, is_placeholder, money, read_sections, read_table, write_sheet  # noqa: E402
 
 
-def rand(amount: Decimal) -> str:
-    """R1,440.00, the way the business's invoices write money."""
-    return f"{'-' if amount < 0 else ''}R{abs(amount):,.2f}"
+CURRENCY = {"symbol": ""}                   # currency_symbol from factory/business, set when the run is planned
+
+
+def money_text(amount: Decimal) -> str:
+    """1,440.00 with the business's currency symbol in front, the way its invoices write money."""
+    return f"{'-' if amount < 0 else ''}{CURRENCY['symbol']}{abs(amount):,.2f}"
 
 
 def nice_date(iso: str) -> str:
@@ -84,6 +87,11 @@ def _paid_so_far(folder: Path, number: str, list_files: set) -> Decimal | None:
 def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str | None, extra: bool) -> dict:
     folder, factory = root / coach_dir, root / "factory"
     me, biz = frontmatter(folder / "me.txt"), frontmatter(factory / "business.txt")
+    unset = [k for k, v in biz.items() if is_placeholder(v)]
+    if unset:
+        raise Refused("factory/business isn't finished: " + ", ".join(unset) + " still hold a <placeholder>. The head "
+                      "coach fills each one in, or leaves it blank, before any invoice is issued.")
+    CURRENCY["symbol"] = str(biz.get("currency_symbol") or "").strip()
     if me.get("role") != "coach" or not me.get("code"):
         raise Refused(f"{coach_dir}/me isn't a coach's details Doc")
     coach_no = str(me.get("coach_number", "")).strip()
@@ -93,7 +101,11 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
     if not re.fullmatch(r"\d{4}-\d{2}", period):
         raise Refused(f"period must look like 2026-11, not '{period}'")
     code = me["code"]
-    issue_date = issue_date or f"{period}-{int(biz.get('invoice_day') or 24):02d}"
+    if not issue_date:
+        day = str(biz.get("invoice_day", "")).strip()
+        if not day.isdigit():
+            raise Refused("invoice_day in factory/business isn't set: the day of the month invoices go out.")
+        issue_date = f"{period}-{int(day):02d}"
     year = int(issue_date[:4])
     rates = {r["code"]: r for r in read_table(factory / "billable-work.csv")}
     lists = invoice_lists(folder)
@@ -195,10 +207,10 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
         if paid is None:
             problems.append(f"update {i}: {shown} is already paid, so it stays as it is. Adjust the client's future invoices.")
         elif total < paid:
-            problems.append(f"update {i}: {shown} already has {rand(paid)} paid, so it can't go down to {rand(total)}. "
+            problems.append(f"update {i}: {shown} already has {money_text(paid)} paid, so it can't go down to {money_text(total)}. "
                             "Adjust the client's future invoices.")
         elif total == money(target["amount"]):
-            problems.append(f"update {i}: {shown} is already {rand(total)}, so there's nothing to update.")
+            problems.append(f"update {i}: {shown} is already {money_text(total)}, so there's nothing to update.")
         else:
             nth = len(versions)
             cid = target["client_id"]
@@ -214,7 +226,7 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
             "list_name": list_name, "docs": docs}
 
 
-# ---------- the PDF: the business's own invoice, measured from it ----------
+# ---------- the PDF: one fixed layout for every coach ----------
 
 def _fonts(factory: Path) -> dict:
     """Inter (the business's invoice font) when its files are in factory/invoice-template/fonts/, else Helvetica."""
@@ -289,7 +301,7 @@ def render(path: Path, doc: dict, run: dict) -> None:
         if top + 12 * len(item) > H - 300:
             c.showPage()
             top = items_head(48)
-        values = [item[0], rand(ln["price"]), f"{ln['qty'].normalize():f}", rand(ln["amount"])]
+        values = [item[0], money_text(ln["price"]), f"{ln['qty'].normalize():f}", money_text(ln["amount"])]
         for (x, _, align), value in zip(cols, values):
             text(x, top, value, "regular", 9.5, align=align)
         for extra in item[1:]:
@@ -301,7 +313,7 @@ def render(path: Path, doc: dict, run: dict) -> None:
     top += 6
     c.setStrokeColor(rule)
     c.line(299, H - top, R, H - top)
-    total = rand(doc["total"])
+    total = money_text(doc["total"])
     text(305.5, top + 12.5, "Subtotal", "regular", 8.5)
     text(R - 6.5, top + 12.5, total, "regular", 8.5, align="r")
     text(305.5, top + 30.5, "Total", "regular", 8.5)
@@ -379,10 +391,10 @@ def summary(run: dict) -> str:
     out = [f"{run['me'].get('name')} — {run['period']} — dated {nice_date(run['date'])} — list {run['list_name']}"]
     for d in run["docs"]:
         who = d["client"] + (f" (paid by {d['payer']})" if d.get("payer") else "")
-        what = f"was {rand(d['was'])}" if d["kind"] == "update" else f"{len(d['lines'])} line(s)"
-        out.append(f"  {d['shown']:<14} {who:<40} {what:<20} {rand(d['total']):>12}")
+        what = f"was {money_text(d['was'])}" if d["kind"] == "update" else f"{len(d['lines'])} line(s)"
+        out.append(f"  {d['shown']:<14} {who:<40} {what:<20} {money_text(d['total']):>12}")
     invoices = [d for d in run["docs"] if d["kind"] == "invoice"]
-    out.append(f"  {len(invoices)} invoice(s), total {rand(sum((d['total'] for d in invoices), ZERO))}"
+    out.append(f"  {len(invoices)} invoice(s), total {money_text(sum((d['total'] for d in invoices), ZERO))}"
                + (f"; {len(run['docs']) - len(invoices)} updated" if len(run["docs"]) > len(invoices) else ""))
     if not run["docs"]:
         out.append("  Nothing to bill: an empty list will mark the run done.")

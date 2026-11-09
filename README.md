@@ -42,14 +42,14 @@ All three are attached to every Project. Agents work only from `workspace/`.
 |---|---|
 | Role maps and skills (head coach, coach) | drafted |
 | First-run setup (`workspace/setup/SKILL.md`) | written, plan rehearsed; not yet run in claude.ai |
-| `issue.py`: the invoice generator (a coach's two outputs) | built, tested; matches the business's own invoice, in Inter (included, trimmed, SIL OFL); ~40 KB per PDF; needs reportlab |
+| `issue.py`: the invoice generator (a coach's two outputs) | built, tested; one fixed layout for every coach, in Inter (included, trimmed, SIL OFL); ~40 KB per PDF; needs reportlab |
 | Drive templates: `.csv` = Google Sheet, `.txt` = Google Doc | drafted |
 | `sync.py`: working-copy changes → Google connector steps, with each role's limits | built, tested |
 | The head coach's `all-invoices` copy of every sealed invoice | built, tested |
 | `coaches.py`: the list of coaches (add with next coach number, list, leave) | built, tested |
 | `build_lists.py`: each coach's `me` and client list, books | built, tested |
 | `runs.py`: invoicing run gate | built, tested |
-| `recon.py`: bank recon, POP recon, unreconciled live list, overpayments, write-off | built, tested on made-up data |
+| `recon.py`: bank recon (any bank's statements, CSV or PDF, read into one layout and balance-checked), POP recon, unreconciled live list, overpayments, write-off | built, tested on made-up data; PDF statements not yet tried in claude.ai |
 | Intake from the Google Form | skill written; reads the Sheet through the connector |
 | `check_sharing.py` | **not built** |
 | Credits, refunds, year-end reports | **out of scope for this build** (handled in the head coach's own accounting system) |

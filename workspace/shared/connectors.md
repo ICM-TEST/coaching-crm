@@ -26,7 +26,7 @@ In your own workspace, make a folder `work/` that mirrors the drive's folders. D
 |---|---|---|
 | a Google **Sheet** `hub/clients` | `work/hub/clients.csv` | Drive connector: download, exported as CSV |
 | a Google **Doc** `factory/business` | `work/factory/business.txt` | Drive connector: download, exported as plain text |
-| a PDF, bank CSV | same name | Drive connector: download |
+| a PDF or other file | same name | Drive connector: download |
 | the invoice fonts (coach, when issuing) | `work/factory/invoice-template/fonts/` | Copy from `_templates/drive/factory/invoice-template/fonts/` in the downloaded repo, before the snapshot. They aren't on the drive |
 | an empty folder the job needs | make the same folder | (check it exists on the drive first) |
 
@@ -55,8 +55,8 @@ exact values). It prints every step, in order. Do them in that order, then re-re
 | lock | Drive: update file, `readOnly` on |
 
 **Write every value exactly as `--json` gives it, leading apostrophe included.** The Sheets connector treats what it
-writes as if a person typed it: without the apostrophe `0820000003` loses its zero, a reference like `2026-01-5` becomes
-a date (and breaks the list's seal), `+27 82 000 0003` becomes `#ERROR!`, and a name starting with `=` runs as a formula.
+writes as if a person typed it: without the apostrophe a phone number loses its leading zero, a reference like `2026-01-5` becomes
+a date (and breaks the list's seal), one starting with `+` becomes `#ERROR!`, and a name starting with `=` runs as a formula.
 The apostrophe isn't stored in the value and doesn't come back in the CSV export. Never remove it, and never type a Sheet
 value any other way.
 

@@ -9,10 +9,9 @@ One run = two outputs: the invoice list and the PDFs. Format: [../../../shared/s
 
 ## Draft — "do my October invoices"
 1. Turn the coach's records into lines per client: **one line per item per month**, with a quantity, e.g.
-   *Group Squad, November, 4* and *Group Squad, October, 2*. Items come only from
-   `factory/billable-work`. **Group sessions are billed in advance** (next month's sessions can go on this run);
-   **private lessons and everything else are billed for the month past.** The `billed` column says which; the generator
-   refuses a line that breaks it.
+   *<item>, November, 4* and *<item>, October, 2*. Items come only from `factory/billable-work`.
+   Its `billed` column says when each item is billed: **`in advance`** items can include next month's sessions on this
+   run; **`after`** items cover only the month past. The generator refuses a line that breaks it.
 2. For no-shows and late cancellations, ask once per case: bill it or not? It's their policy.
 3. A name that isn't in `clients`: don't invent an id. Say the client isn't on their list yet; the head coach
    adds clients from the Form. The invoice prints the client's **full name and phone from `clients`**.

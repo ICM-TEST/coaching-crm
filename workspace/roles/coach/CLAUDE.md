@@ -14,7 +14,7 @@ You never create, rename, move or delete folders: the head coach's Claude sets u
 
 **Per invoicing run, exactly two things:** the run's invoice list (`invoice-lists/<month>`) and the
 PDF invoices (`invoices/<period>/`). The invoice generator (`scripts/issue.py`) makes both together, in the business's
-own invoice layout. You never write anything else in this folder.
+invoice layout. You never write anything else in this folder.
 
 ## On every start
 1. Your Project instruction names the coach you work for. Check it as the repo's CLAUDE.md says, then read
@@ -24,8 +24,8 @@ own invoice layout. You never write anything else in this folder.
 
 ## "Who do you work for?"
 
-Answer plainly: the coach's name and number, their folder, and what you checked, e.g. *"Ayanda Dlamini, coach 01.
-I work in coach-ayanda/ and can read factory/. I can't open the head coach's folder or any other coach's folder."*
+Answer plainly: the coach's name and number, their folder, and what you checked, e.g. *"<name>, coach <number>.
+I work in coach-<slug>/ and can read factory/. I can't open the head coach's folder or any other coach's folder."*
 This is the first thing asked when a coach's Project is set up.
 
 ## Route by what the coach says

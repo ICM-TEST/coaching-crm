@@ -39,7 +39,7 @@ BANK_1 = [  # date, description, amount
     ("2026/12/02", "AY-0001 SIPHO", "1400.00"),          # reference
     ("2026/12/02", "NALEDI K", "1400.00"),               # client name + amount
     ("2026/12/03", "MOKOENA", "1260.00"),                # one parent, two coaches (BN-0003 700 + HN-0001 560)
-    ("2026/12/03", "TENNIS", "700.00"),                  # several R700 invoices -> ?
+    ("2026/12/03", "COACHING", "700.00"),                  # several R700 invoices -> ?
     ("2026/12/03", "SAMSON T", "1500.00"),               # overpaid by 100 -> invoice paid, R100 listed for Morgan
     ("2026/12/04", "TRANSFER FROM SAVINGS", "5000.00"),  # ? -> head coach: non-client
     ("2026/12/04", "SMITH", "1050.00"),                  # two Smiths, one fits the amount
@@ -71,6 +71,8 @@ def run(*args, ok=(0,)):
 
 
 def write_bank(path, lines):
+    """The statement as the bank gives it, and the lines the head coach's Claude reads from it into hub/bank/lines/."""
+    read = []
     with path.open("w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Date", "Description", "Amount", "Balance"])
@@ -78,6 +80,11 @@ def write_bank(path, lines):
         for d, desc, amt in lines:
             balance += float(amt)
             w.writerow([d, desc, amt, f"{balance:.2f}"])
+            read.append([d.replace("/", "-"), desc, amt, f"{balance:.2f}"])
+    with (path.parent / "lines" / f"{path.name}.csv").open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["date", "description", "amount", "balance"])
+        w.writerows(read)
 
 
 def issue_list(root, slug, period, issued, rows):
@@ -128,6 +135,8 @@ class Cycle(unittest.TestCase):
         cls.root = cls.tmp / "Test CRM"
         shutil.copytree(REPO / "_templates" / "drive", cls.root)
         shutil.rmtree(cls.root / "coach-template")
+        (cls.root / "factory/business.txt").write_text("trading_name: Example Coaching Co\ncurrency_symbol: R\n"
+                                                    "invoice_number_format: \"{year}-{coach}-{seq}\"\ninvoice_day: 24\n")
         cls.R = ["--root", str(cls.root)]
         for slug, code, name in COACHES:                    # the head coach adds each coach: next coach number
             run("scripts/coaches.py", *cls.R, "add", "--name", name, "--code", code, "--phone", f"+2782000{len(slug):04d}",
@@ -200,14 +209,14 @@ class Cycle(unittest.TestCase):
         self.assertEqual(find(rows, description="SMITH")[0]["invoice"], "GR-0003")
         self.assertEqual(find(rows, description="KP BN 0001")[0]["invoice"], "BN-0001")
         must_decide = {r["description"] for r in rows if r["decision"] == "?"}
-        self.assertEqual(must_decide, {"TENNIS", "TRANSFER FROM SAVINGS", "ZANELE DUBE", "PV HN 3", "PREPAY JANE",
+        self.assertEqual(must_decide, {"COACHING", "TRANSFER FROM SAVINGS", "ZANELE DUBE", "PV HN 3", "PREPAY JANE",
                                        "CASH DEP", "MYSTERY"})
 
         _, out = run("scripts/recon.py", *R, "push", str(prop), ok=(1,))
         self.assertIn("undecided", out)                   # every unplaced EFT needs the head coach
 
         line = {r["description"]: r["line"] for r in rows}
-        decide(prop, {line["TENNIS"]: {"coach": "gareth", "client_id": "C0013", "invoice": "GR-0001", "decision": "accept"},
+        decide(prop, {line["COACHING"]: {"coach": "gareth", "client_id": "C0013", "invoice": "GR-0001", "decision": "accept"},
                       line["TRANSFER FROM SAVINGS"]: {"decision": "non-client"},
                       line["ZANELE DUBE"]: {"decision": "accept"},
                       line["PV HN 3"]: {"decision": "unreconciled"},
@@ -301,7 +310,7 @@ class Cycle(unittest.TestCase):
                 self.assertNotIn(f"{ocode}-0", text, f"{other}'s invoice in {slug}'s folder")
                 for cid, _, _, _ in CLIENTS[other]:
                     self.assertNotIn(cid, text, f"{other}'s client {cid} in {slug}'s folder")
-            for hub_only in ("SAVINGS", "PREPAY", "CASH DEP", "MYSTERY", "PV HN", "TENNIS",
+            for hub_only in ("SAVINGS", "PREPAY", "CASH DEP", "MYSTERY", "PV HN", "COACHING",
                              "2026-12-02", "2026-12-03", "2026-12-04",   # bank payment dates
                              "proof of payment matched", "write-off"):
                 self.assertNotIn(hub_only, text)

@@ -37,7 +37,10 @@ def gate(drive: Drive, period: str) -> tuple[list[dict], list[dict]]:
 def cmd_open(root, period: str, due: str | None) -> None:
     drive = Drive(root)
     if not due:
-        day = int(frontmatter(drive.factory / "business.txt").get("invoice_day") or 24)
+        day = str(frontmatter(drive.factory / "business.txt").get("invoice_day", "")).strip()
+        if not day.isdigit():
+            raise SystemExit("Refused: set invoice_day in factory/business first (the day of the month invoices go out).")
+        day = int(day)
         due = f"{period}-{day:02d}"
     path = drive.factory / "invoicing-runs.csv"
     # The head coach's side makes every folder; a coach's Claude never does. Each active coach gets this month's
