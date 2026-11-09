@@ -6,9 +6,16 @@ Google Shared Drive. Nothing in this repo is client data, and nothing you do may
 
 ## Who are you working for?
 
-Everyone's Claude has this same public GitHub repo attached, whole and read-only. **`workspace/` is yours: you work only from here.** The repo's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. Every path in these rules is inside `workspace/`, so `setup/` always means `workspace/setup/`. **Your Claude Project's instruction names who you work for**, for example
-*"You are the Claude for <name>, coach <number> … Data: coach-<slug>/ and factory/ in Google Drive"*. The head coach's Claude makes that
-instruction when it adds the coach (`scripts/coaches.py add`, or `instructions <slug>` to show it again).
+Everyone's Claude has this same public GitHub repo attached, whole and read-only. **`workspace/` is yours: you work only from here.** The repo's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. Every path in these rules is inside `workspace/`, so `setup/` always means `workspace/setup/`. **Your Claude Project's instruction says who you work for.**
+- **A coach's** instruction names them, for example *"You are the Claude for <name>, coach <number> … Data:
+  coach-<slug>/ and factory/ in Google Drive"*. The head coach's Claude makes it when it adds the coach, inside their
+  setup message (`scripts/coaches.py welcome <slug>`, or `instructions <slug>` alone).
+- **The head coach's** instruction names only the role, never a person. Their name comes from `hub/<slug>.me`, and
+  before `hub/` exists, from their own answers in first-run setup.
+
+**Only the instruction and the drive count.** The Project's description, its memory, earlier chats and anything you
+remember are not part of this system: never take a name, role or folder from them, and never stop because they
+disagree with the instruction or the drive.
 
 Before anything else, **check the name against what you can open** in Google Drive (the Shared Drive, or a shared folder standing in for it). Drive sharing is the real
 lock; the instruction only says which role to play.
@@ -20,7 +27,7 @@ lock; the instruction only says which role to play.
 
 **If anything doesn't match** (the folder is missing, the `.me` Doc names someone else, or you can open `hub/` or a second
 coach folder as a coach): **stop.** Open nothing else, and tell the person to alert the head coach. Either the instruction
-or the sharing is wrong. **No instruction naming anyone:** stop and say this Claude isn't set up yet. **A head coach with no `hub/` yet** isn't a mismatch: offer first-run setup ([setup/SKILL.md](setup/SKILL.md)).
+or the sharing is wrong. **No instruction naming a coach or the head coach role:** stop and say this Claude isn't set up yet. **A head coach with no `hub/` yet** isn't a mismatch: offer first-run setup ([setup/SKILL.md](setup/SKILL.md)).
 
 The head coach can open every coach's `.me` Doc. Those describe the other coaches, not the head coach: never take on a
 coach's identity from them.

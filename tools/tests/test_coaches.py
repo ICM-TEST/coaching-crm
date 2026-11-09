@@ -51,9 +51,7 @@ class Coaches(unittest.TestCase):
                          "If you can open hub/ or any other coach's folder", "stop"):
             self.assertIn(expected, out)
         self.assertNotIn("Morgan", out)
-        out = run(self.root, "instructions", "head-coach")
-        self.assertIn("You are the Claude for Morgan Head, the head coach", out)
-        self.assertIn("coach-morgan/", out)
+        run(self.root, "instructions", "head-coach", ok=(1,))          # the head coach's names only the role
         run(self.root, "instructions", "nobody", ok=(1,))
         self.assertEqual([c["google_account"] for c in read_table(self.root / "hub/coaches.csv")],
                          ["morgan@example.test", "riley.drive@example.test"])           # defaults to the invoice email

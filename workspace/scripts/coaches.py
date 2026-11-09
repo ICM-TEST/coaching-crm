@@ -8,7 +8,7 @@
   coaches.py --root <drive> welcome <slug>        the coach's step-by-step setup message, their Project instruction inside
   coaches.py --root <drive> leave <slug>          marks them as left; their active clients become unallocated
   coaches.py --root <drive> unshare <slug>        the head coach's steps to remove the coach's access
-  coaches.py --root <drive> instructions <slug>   (or: instructions head-coach)
+  coaches.py --root <drive> instructions <slug>   a coach's Project instruction on its own
 
 `add` gives the coach the next coach number (01, 02, …; never reused), creates and names their folder from the
 template, writes their <slug>.me Doc and client list Sheet, and prints the Project instruction for that coach's Claude: it names
@@ -79,17 +79,13 @@ def steps(drive: Drive, slug: str, part: str) -> str:
 
 
 def instruction(drive: Drive, who: str) -> str:
-    """The Project instruction for one person's Claude. It names who that Claude works for; the repo's CLAUDE.md
-    then checks the name against what the account can open in the Shared Drive."""
+    """A coach's Project instruction. It names who that Claude works for; the repo's CLAUDE.md then checks the name
+    against what the account can open in the Shared Drive. The head coach's instruction names only the role, so it
+    isn't made here."""
     business = frontmatter(drive.factory / "business.txt").get("trading_name", "the business")
-    head = frontmatter(drive.head_me())
     if who == "head-coach":
-        return (f"You are the Claude for {head.get('name', 'the head coach')}, the head coach at {business}.\n\n"
-                "Structure: the repository in this project's knowledge. Read workspace/CLAUDE.md before anything else and "
-                "follow it, in the head-coach role. It is read-only.\n\n"
-                f"Data: the business's folder in Google Drive, the one holding hub/. Your own coaching is in coach-{head.get('slug', '')}/. "
-                "Use the Google Drive connector to find and read files and upload PDFs, Google Sheets for lists, and Google "
-                "Docs for documents. If you can't open hub/, stop and say so.")
+        raise SystemExit("The head coach's instruction names only the role, never a person, so there's nothing to make "
+                         "here. It's the same for every business.")
     row = next((r for r in drive.coaches(active_only=False) if r["slug"] == who), None)
     if not row:
         raise SystemExit(f"No coach '{who}' in hub/coaches.")
@@ -157,7 +153,7 @@ def main() -> None:
     l = sub.add_parser("leave"); l.add_argument("slug")
     for part in ("share", "welcome", "unshare"):
         sub.add_parser(part).add_argument("slug")
-    i = sub.add_parser("instructions"); i.add_argument("who", help="a coach's slug, or head-coach")
+    i = sub.add_parser("instructions"); i.add_argument("who", help="a coach's slug")
     args = ap.parse_args()
     drive = Drive(args.root)
     if args.cmd == "add":
