@@ -50,7 +50,6 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 | `client-form` (Doc) | `link:` the client form's link for new clients, which the head coach and every coach hand out | the head coach's Claude ([../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md)) |
 | `invoice-template/fonts/` | Inter font files for the invoices | head coach |
 | `billable-work` | `code` · `name` (as printed) · `unit` · `rate` · `billed` (`in advance`: can bill next month's sessions · `after`: the month past) | head coach |
-| `invoicing-runs` | `period` · `opened` · `due` · `status` | `runs.py open` |
 | `invoice-rules`, `invoice-template/` | *designed in the invoice-design stage* | head coach |
 
 ## coach-&lt;slug&gt;/ — one coach
@@ -62,7 +61,7 @@ Everything else in the folder comes from the head coach.
 |---|---|---|
 | `<slug>.me` (Doc) | **generated from the coach's row in `hub/coaches`:** `name`, `slug`, `code`, `coach_number`, `phone`, `email` (printed on their invoices), `invoice_start`, `role: coach` | `build_lists.py` / every recon step |
 | `invoice-lists/<month>` | **Output 1.** One run's invoices (format below) | invoice generator (coach), once, at issue |
-| `invoices/<period>/*.pdf` | **Output 2.** The PDFs the coach sends to clients. The `<period>/` folder is made by `runs.py open` (head coach) | invoice generator (coach), at issue |
+| `invoices/<period>/*.pdf` | **Output 2.** The PDFs the coach sends to clients. The `<period>/` folder is made by the coach's own Claude when it first issues for that month | invoice generator (coach), at issue |
 | `clients` | this coach's clients: `id` · `name` · `phone` · `email` · `status` · `since`. Updates by itself when the head coach assigns or moves a client. | `build_lists.py` after every main-list change, and again at every recon step |
 | `unpaid` | **the only money information a coach gets:** their unpaid invoices, longest unpaid first (amount, still owed, days unpaid). An invoice not listed is settled. | `recon.py` |
 | `pops/` | proofs of payment from this coach's clients, uploaded by the coach (invoice number in the file name if known). Not a Claude output: the coach uploads them. The POP recon only uses them for **this coach's** invoices. | the coach, by hand |

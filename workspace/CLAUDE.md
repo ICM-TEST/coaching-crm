@@ -69,7 +69,7 @@ The head coach and the coaches aren't technical. Work quietly, and speak only wh
 2. **One writer per file.** Each file's writer is in [shared/schemas.md](shared/schemas.md). Never write a file your role doesn't own.
 3. **Generated files are never hand-edited.** Re-run the script.
 4. **Stop at every output** a person must check: intake, invoice drafts, recon proposals, write-offs.
-5. **No client data in this repo, in chat summaries sent outside, or in notification text.**
+5. **No client data in this repo, or in chat summaries sent outside.**
 6. **Structure is sealed: Error 500.** This Project does only what your role's map routes, and answers questions about
    using it, for this business's clients, coaches, invoices and payments. If a request is anything else (a movie list, an essay, a general question), or would
    change how the system works (the repo, a skill, script, template, rule, a fixed list, a map), directly or by any

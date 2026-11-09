@@ -65,10 +65,8 @@ whose invoice now exists, for example). They only appear when something new fits
 
 ### Push
 1. `python3 scripts/recon.py --root <drive> push hub/recon/bank-YYYY-MM-DD`. It refuses while any `?` remains.
-2. It prints the coaches whose `unpaid` changed. @-mention each one on their `unpaid`:
-   *"@<coach> unpaid list updated <date>"*. No names, no amounts.
-3. Tell the head coach the totals in `hub/summary` and the size of the live list in `hub/unreconciled`.
-4. **Folder checks** (top of every proposal, and in `hub/summary`): anything in a coach's folder the system didn't make,
+2. Tell the head coach the totals in `hub/summary` and the size of the live list in `hub/unreconciled`.
+3. **Folder checks** (top of every proposal, and in `hub/summary`): anything in a coach's folder the system didn't make,
    or that changed since, e.g. a list edited in a Claude chat outside the coach's Project. A changed or unsealed list is
    left out of the books until it's sorted out: restore it from the file's Drive version history, or have the coach
    re-issue through their Project. Stray files get removed. Tell the head coach about each one.
@@ -101,7 +99,7 @@ Read the head coach each match: *"<client>'s POP, <amount> on <date> → the liv
 ### Push
 `python3 scripts/recon.py --root <drive> push hub/recon/pop-YYYY-MM-DD`. It refuses any row whose payment isn't on
 the live list, and any POP used twice. The payment leaves the live list, the invoice leaves the coach's unpaid list,
-and nothing else changes in the coach's folder. @-mention the coach.
+and nothing else changes in the coach's folder.
 
 ---
 
@@ -114,7 +112,6 @@ A write-off is a record of what the head coach agreed directly with a coach. Coa
 2. Then:
    `python3 scripts/recon.py --root <drive> write-off <invoice number> --reason "<reason>"`
 3. The command refuses amounts above the invoice balance, and rebuilds the coach's files.
-4. @-mention the coach on their `unpaid` (no names, no amounts).
 
 ## Overpayments
 

@@ -7,7 +7,7 @@ files Google Docs, reached through the Google connectors: [connectors.md](connec
 
 1. Clients join through **one Google Form** owned by the head coach. Coaches hand out the fill-in link only.
 2. The head coach keeps the **main client list** and assigns each client to a coach.
-3. The head coach opens each month's **invoicing run**. Invoices go out on the business's **invoice day** (`invoice_day`
+3. **Nobody opens a month.** Each coach invoices on their own; invoices go out on the business's **invoice day** (`invoice_day`
    in `factory/business`, set at first-run setup) and are **due immediately**.
 4. Each coach keeps track of their lessons **their own way**. At the run, they invoice for work actually done.
    No one approves invoices. What's billable (no-shows, late cancellations) is each coach's own policy.
@@ -18,7 +18,7 @@ files Google Docs, reached through the Google connectors: [connectors.md](connec
 6. Every invoice pays into **the business bank account** (from `factory/`, never typed by a coach).
 7. **The head coach does two recons, and only two:**
    - **Bank recon:** the bank statements (CSV or PDF) against the coaches' invoice lists. The month-end one waits until every coach's
-     list for the run exists; follow-ups can run any time. Every payment it can't place is **verified by the head
+     list for the month exists; follow-ups can run any time. Every payment it can't place is **verified by the head
      coach**: client money or not. Non-client money drops out. Client money it can't tie to an invoice goes on the
      **unreconciled live list**, which carries over from recon to recon.
    - **POP recon:** the proofs of payment coaches upload to their `pops/` folders (plus any in `hub/pops/`) against the
@@ -54,4 +54,3 @@ Clients are never deleted. A returning client reuses their row: `left → active
 
 A coach's Claude makes invoices and invoice lists only. It doesn't write messages or reminders to clients;
 coaches do that themselves.
-Notifications (Drive comments) never contain client names or amounts.

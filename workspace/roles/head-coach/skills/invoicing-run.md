@@ -1,20 +1,10 @@
-# Skill — invoicing run
+# Skill — who's done a month
 
-A run is one month's invoicing. Each coach's run produces exactly two things: an invoice list in their
-`invoice-lists/` and the PDFs. **A coach is done when their list for the period exists.** The month-end
-recon waits until every active coach is done.
+**Nobody opens a month.** Each coach's Claude makes its own month folder when it issues, and a coach is done when their
+invoice list for the month exists. Invoices are due on `invoice_day` in `factory/business`. The month-end recon waits
+until every active coach is done; it checks this itself.
 
-## Open a run — "open November invoicing"
-Invoices go out on `invoice_day` in `factory/business`, and the run is due that day.
-1. `python3 scripts/runs.py --root <drive> open 2026-11` (add `--due 2026-11-25` only if the head coach names another day).
-   It also makes `invoices/2026-11/` in every active coach's folder: coaches' Claudes never make folders.
-2. Leave one Drive comment on `factory/invoicing-runs` @-mentioning every active coach:
-   *"November invoicing is open, due 24 Nov."*
-
-## Check a run — "who's done November?"
+## "Who's done November?" (or "open November invoicing")
 1. `python3 scripts/runs.py --root <drive> status 2026-11`
-2. Report it as printed: done (with invoice count and total, from each coach's list), not done.
-3. Offer to remind the coaches who aren't done: one Drive comment on `factory/invoicing-runs` tagging only them.
-
-## Close
-`runs.py status` prints `COMPLETE` when every active coach has a list for the period. The month-end recon checks this itself.
+2. Report it as printed: done (with invoice count and total), not done. If they asked to open a month, say there's
+   nothing to open: coaches invoice on their own.

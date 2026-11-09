@@ -9,7 +9,6 @@
    as the last coach. Clients are never deleted.
 3. Append to `hub/client-history`: `date` · `client_id` · `coach <old slug> → <new slug>` · the reason given.
 4. Run `scripts/build_lists.py coach-clients`.
-5. @-mention the coaches affected.
 
 ## Add one by hand
 For a client who won't use the Form. Give them the next `C` id, append a row to `hub/clients` (id, name, phone, email, status

@@ -41,7 +41,6 @@ class Updates(unittest.TestCase):
         c.write_text(c.read_text() + "C0001,Sipho Example,0830000001,,active,riley,2026-10-01,\n"
                                      "C0002,Naledi Example,0830000002,,active,riley,2026-10-01,\n")
         self.run_ok("build_lists.py", "coach-clients")
-        self.run_ok("runs.py", "open", "2026-10")
         self.issue({"invoices": [{"client_id": "C0001", "lines": PVT2 + [{"code": "PVT", "month": "2026-10", "qty": 2}, GROUP]},
                                  {"client_id": "C0002", "lines": PVT2}]})       # 2026-01-490 R2120, 2026-01-491 R700
         self.bank_n = 0
@@ -180,7 +179,6 @@ class Updates(unittest.TestCase):
     def test_wrong_period_and_nothing_to_change(self):
         path = self.tmp / "d.json"
         path.write_text(json.dumps({"updates": [{"invoice": "2026-01-490", "lines": PVT2}]}))
-        self.run_ok("runs.py", "open", "2026-11")
         p = self.run_("issue.py", "--coach-dir", "coach-riley", "--period", "2026-11", "--drafts", str(path))
         self.assertIn("Use --period 2026-10", p.stdout)
         self.assertIn("nothing to update", self.issue({"updates": [{"invoice": "2026-01-491", "lines": PVT2}]}, ok=False))

@@ -42,16 +42,16 @@ The coach corrects or approves the drafts.
 Follow [../../../shared/connectors.md](../../../shared/connectors.md): read → run → write.
 
 1. **Read.** `python3 scripts/issue.py --coach-dir coach-<slug> --needs` lists what to download into `work/`: this
-   coach's `<slug>.me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list and run Sheets,
-   the fonts (copied from the downloaded repo), and the month's PDF folder (check it exists; make the same empty folder in `work/`).
+   coach's `<slug>.me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list,
+   the fonts (copied from the downloaded repo), and the month's PDF folder (if it's on the drive, make the same empty folder in `work/` before the snapshot; if not,
+   the generator makes it and the plan creates it).
    Then `python3 scripts/sync.py snapshot work`.
 2. **Draft, dry run, issue** as above, with `--root work`.
 3. **Write.** `python3 scripts/sync.py plan work --role coach --coach coach-<slug>`. It lists: upload each PDF, create
    the invoice-list Sheet (**after** the PDFs), lock them all. Carry it out in that order, then list both folders on the
    drive to check every file is there.
-   - The month's PDF folder and `invoice-lists/` **already exist**: the head coach's Claude makes every folder. **Never
-     create, rename, move or delete anything on the drive.** If a folder is missing, stop and tell the coach to ask the
-     head coach.
+   - The month's PDF folder is the **only** folder you ever make, and only through the plan. **Never rename, move or
+     delete anything on the drive.**
    - If the plan says **Refused**, write nothing and tell the coach why.
 
 ## Corrections

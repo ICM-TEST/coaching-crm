@@ -1,4 +1,0 @@
-# Invoicing runs
-# Opened by the head coach (runs.py open). A coach is done when their invoice list for the period exists.
-
-period,opened,due,status

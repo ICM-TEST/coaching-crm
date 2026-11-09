@@ -115,11 +115,6 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
     clients.update({c["id"]: {"name": c["name"], "phone": c.get("phone", "")}
                     for c in read_table(folder / "clients.csv")})                            # current clients
 
-    if not any(r.get("period") == period for r in read_table(factory / "invoicing-runs.csv")):
-        raise Refused(f"the head coach hasn't opened {period} invoicing yet")
-    if not (folder / "invoices" / period).is_dir():
-        raise Refused(f"{coach_dir}/invoices/{period}/ doesn't exist. The head coach's Claude makes it when it opens the "
-                      "run; ask the head coach. Never create it yourself.")
     if drafts.get("credit_notes"):
         raise Refused("This system has no credit notes. Update the invoice while it's unpaid; once it's paid, adjust "
                       "the client's future invoices.")
@@ -351,7 +346,8 @@ def pdf_name(doc: dict) -> str:
 
 def issue(run: dict) -> Path:
     folder, period = run["folder"], run["period"]
-    pdf_dir = folder / "invoices" / period                    # made by the head coach's side when the run opened
+    pdf_dir = folder / "invoices" / period                    # the month's folder: the only folder a coach ever makes
+    pdf_dir.mkdir(parents=True, exist_ok=True)
     rows = []
     for doc in run["docs"]:                                     # 1. the PDFs
         pdf = pdf_dir / pdf_name(doc)
@@ -373,9 +369,9 @@ def issue(run: dict) -> Path:
 NEEDS = ["{coach}/{slug}.me  (Doc, as .txt)", "{coach}/clients  (Sheet, as .csv)", "{coach}/invoice-lists/*  (Sheets, as .csv)",
          "{coach}/unpaid  (Sheet, as .csv)",
          "factory/business  (Doc, as .txt)", "factory/billable-work  (Sheet, as .csv)",
-         "factory/invoicing-runs  (Sheet, as .csv)", "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)",
-         "{coach}/invoices/<month>/   (folder only: check it exists on the drive and make the same empty folder in the "
-         "working copy; never create it on the drive)"]
+         "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)",
+         "{coach}/invoices/<month>/   (folder only: if it's already on the drive, make the same empty folder in the "
+         "working copy before the snapshot; if not, leave it: the generator makes it and the plan creates it)"]
 
 
 def uploads(run: dict, out: Path) -> str:

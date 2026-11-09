@@ -174,11 +174,9 @@ class Cycle(unittest.TestCase):
                 for cid, _, _, _ in clist:
                     self.assertEqual(cid in text, other == slug, f"{cid} in {slug}'s clients.csv")
 
-        # --- invoicing run: a coach is done when their invoice list exists ---
-        _, out = run("scripts/runs.py", *R, "open", "2026-11")
-        self.assertIn("due 2026-11-24", out)              # invoice_day from factory/business.md
-        for slug, _, _ in COACHES:                        # the head coach's side makes every coach's month folder
-            self.assertTrue((self.root / f"coach-{slug}/invoices/2026-11").is_dir(), slug)
+        # --- a month's invoicing: nobody opens it; a coach is done when their invoice list exists ---
+        _, out = run("scripts/runs.py", *R, "status", "2026-11")
+        self.assertIn("2026-11, due 2026-11-24: 0 of 8 done", out)     # invoice_day from factory/business
         for slug in ["morgan", "ayanda", "ben", "fatima", "hannah"]:
             issue_list(self.root, slug, "2026-11", "2026-12-01", november_rows(slug))
         _, out = run("scripts/runs.py", *R, "status", "2026-11")

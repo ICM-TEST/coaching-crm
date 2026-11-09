@@ -4,7 +4,7 @@ The head coach isn't a Claude or Google Drive expert, and neither are the coache
 one action each, in plain words. Give one part at a time and wait for "done" before the next.
 
 Every job is read → run → write ([../../../shared/connectors.md](../../../shared/connectors.md)). Read `hub/coaches`,
-`hub/clients`, the head coach's `<slug>.me`, `factory/business` and `factory/invoicing-runs`.
+`hub/clients`, the head coach's `<slug>.me` and `factory/business`.
 
 ## Add a coach: "add a coach", "set up <name>"
 
@@ -21,8 +21,7 @@ Read it back in one message. Wait for a yes.
 ### Make their folder
 1. `python3 scripts/coaches.py --root <work> add --name "…" --phone "…" --email … --google … --invoice-start …`
    It gives them the next coach number, and makes their folder and their `<slug>.me` Doc.
-2. If an invoicing run is open, `python3 scripts/runs.py --root <work> open <period>` again, so they get its month folder.
-3. Write it: `python3 scripts/sync.py plan <work> --role head-coach`, then carry out the plan. Re-read their `.me` Doc.
+2. Write it: `python3 scripts/sync.py plan <work> --role head-coach`, then carry out the plan. Re-read their `.me` Doc.
 
 ### Sharing: the head coach does it, you guide
 `python3 scripts/coaches.py --root <work> share <slug>` prints the steps. Give them exactly as printed, and wait for

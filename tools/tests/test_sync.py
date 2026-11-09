@@ -49,17 +49,7 @@ class Sync(unittest.TestCase):
     def ops(self, *role):
         return json.loads(self.plan(*role, "--json"))
 
-    def test_head_coach_opens_a_run(self):
-        run("sync.py", "snapshot", str(self.work))
-        run("runs.py", "--root", str(self.work), "open", "2026-10")
-        ops = self.ops("--role", "head-coach")
-        self.assertEqual([(o["op"], o["path"]) for o in ops],
-                         [("create_folder", "coach-riley/invoices/2026-10"),
-                          ("append", "factory/invoicing-runs")])
-        self.assertEqual(ops[1]["values"][0][0], "'2026-10")
-
     def test_coach_issues_invoices(self):
-        run("runs.py", "--root", str(self.work), "open", "2026-10")
         run("sync.py", "snapshot", str(self.work))
         drafts = self.tmp / "drafts.json"
         drafts.write_text(json.dumps({"invoices": [{"client_id": "C0001", "lines": [{"code": "PVT", "month": "2026-10",
@@ -68,11 +58,12 @@ class Sync(unittest.TestCase):
             "--drafts", str(drafts))
         ops = self.ops("--role", "coach", "--coach", "coach-riley")
         self.assertEqual([(o["op"], o["path"]) for o in ops],
-                         [("upload", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),
+                         [("create_folder", "coach-riley/invoices/2026-10"),             # its own month folder
+                          ("upload", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),
                           ("create_sheet", "coach-riley/invoice-lists/2026-10"),          # the list after its PDF
                           ("lock", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),
                           ("lock", "coach-riley/invoice-lists/2026-10")])
-        sheet = ops[1]["values"]
+        sheet = ops[2]["values"]
         self.assertIn(["'made_by:", "'issue.py"], sheet)                                  # the seal block travels
         self.assertTrue(any(r[:1] == ["'seal:"] and r[1].startswith("'seal-") for r in sheet))
         self.assertIn("Carry these out in this order", self.plan("--role", "coach", "--coach", "coach-riley"))
@@ -91,21 +82,20 @@ class Sync(unittest.TestCase):
 
     def test_a_coach_may_not_do_anything_else(self):
         run("sync.py", "snapshot", str(self.work))
-        (self.work / "coach-riley/invoices/2026-11").mkdir(parents=True)                  # a folder: Morgan's job
-        (self.work / "coach-riley/invoices/2026-11/x.pdf").write_bytes(b"%PDF")
+        (self.work / "coach-riley/invoices/extra").mkdir(parents=True)                    # not a month folder
+        (self.work / "coach-riley/invoices/extra/x.pdf").write_bytes(b"%PDF")
         c = self.work / "coach-riley/clients.csv"
         c.write_text(c.read_text() + "C0099,Someone,,,active,2026-10-01\n")               # a generated Sheet
         (self.work / "coach-riley/invoice-lists/README.txt").unlink()                     # a deletion
         out = self.plan("--role", "coach", "--coach", "coach-riley", ok=(1,))
-        for expected in ("coach-riley/invoices/2026-11: a coach's Claude may only upload",
-                         "coach-riley/invoices/2026-11/x.pdf: a coach's Claude may only upload its PDFs into an existing",
+        for expected in ("coach-riley/invoices/extra: a coach's Claude may only make its month folder",
+                         "coach-riley/invoices/extra/x.pdf: a coach's Claude may only make its month folder",
                          "coach-riley/clients: a coach's Claude may only",
                          "coach-riley/invoice-lists/README.txt: deleted"):
             self.assertIn(expected, out)
         self.assertIn("don't write anything to the drive", out)
 
     def test_head_coach_recon_writes(self):
-        run("runs.py", "--root", str(self.work), "open", "2026-10")
         drafts = self.tmp / "drafts.json"
         drafts.write_text(json.dumps({"invoices": [{"client_id": "C0001", "lines": [{"code": "PVT", "month": "2026-10",
                                                                                      "qty": 2}]}]}))

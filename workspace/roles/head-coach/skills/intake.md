@@ -23,4 +23,4 @@ The head coach reads the intake Sheet and fixes the `decision`s. Never merge or 
   with the answers to the head coach's own details in their columns.
 - `reactivate Cxxxx` → set that row's status back to `active`, and its coach.
 - Every change → one line in `hub/client-history`.
-- Run `scripts/build_lists.py coach-clients`, then @-mention the coaches whose `clients` changed.
+- Run `scripts/build_lists.py coach-clients`.

@@ -49,7 +49,7 @@ All three are attached to every Project. Agents work only from `workspace/`.
 | `coaches.py`: the list of coaches (add with next coach number, list, leave: their clients become unallocated) and the step-by-step share, welcome and unshare texts | built, tested; the texts' claude.ai and Drive button names not yet checked |
 | `clients.py`: the head coach's own client details, and importing an existing client list | built, tested |
 | `build_lists.py`: each coach's `<slug>.me` Doc and client list, books | built, tested |
-| `runs.py`: invoicing run gate | built, tested |
+| `runs.py`: who's done a month (nobody opens one); the month-end gate | built, tested |
 | `recon.py`: bank recon (any bank's statements, CSV or PDF, read into one layout and balance-checked), POP recon, unreconciled live list, overpayments, write-off | built, tested on made-up data; PDF statements not yet tried in claude.ai |
 | The client form: built by the head coach from Claude's steps, answers in `hub/client-form responses`; intake reads them | skills written |
 | `check_sharing.py` | **not built** |

@@ -17,6 +17,7 @@ import csv
 import hashlib
 import io
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -131,12 +132,13 @@ def plan(work: Path, role: str, coach: str) -> tuple[list[dict], list[str]]:
             continue
         p = o["path"]
         if role == "coach":
-            ok = (o["op"] == "upload" and p.startswith(f"{coach}/invoices/") and p.endswith(".pdf")
-                  and p.rsplit("/", 1)[0] in old_dirs) or \
+            month = re.compile(rf"{re.escape(coach)}/invoices/\d{{4}}-\d{{2}}")      # the only folder a coach makes
+            ok = (o["op"] == "create_folder" and month.fullmatch(p)) or \
+                 (o["op"] == "upload" and p.endswith(".pdf") and month.fullmatch(p.rsplit("/", 1)[0])) or \
                  (o["op"] == "create_sheet" and p.startswith(f"{coach}/invoice-lists/"))
             if not ok:
-                problems.append(f"{p}: a coach's Claude may only upload its PDFs into an existing month folder and "
-                                f"create its invoice-list Sheets (not '{o['op']}')")
+                problems.append(f"{p}: a coach's Claude may only make its month folder in invoices/, upload its PDFs "
+                                f"into it, and create its invoice-list Sheets (not '{o['op']}')")
         elif role == "head-coach":
             top = p.split("/", 1)[0]
             if top.startswith("coach-") and not (o["op"] == "create_folder" or p == f"{top}/{top.removeprefix('coach-')}.me" or p.endswith(("/clients", "/unpaid"))

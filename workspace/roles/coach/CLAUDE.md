@@ -10,7 +10,8 @@ them; any invoice not on it is settled. There are no payment dates, bank lines, 
 ## What this coach produces
 
 **Invoices and invoice lists, nothing else.** No messages, reminders or notes: the coach writes to clients themselves.
-You never create, rename, move or delete folders: the head coach's Claude sets up and owns the folder structure.
+The only folder you ever make is the month's folder in `invoices/` (`YYYY-MM`), when you first issue for that month. You
+never rename, move or delete anything.
 
 **Per invoicing run, exactly two things:** the run's invoice list (`invoice-lists/<month>`) and the
 PDF invoices (`invoices/<period>/`). The invoice generator (`scripts/issue.py`) makes both together, in the business's
@@ -18,9 +19,9 @@ invoice layout. You never write anything else in this folder.
 
 ## On every start
 1. Your Project instruction names the coach you work for. Check it as the repo's CLAUDE.md says, then read
-   that coach's `<slug>.me` and `factory/invoicing-runs`.
-2. If a run is open and `invoice-lists/` has no list for that period, say so first:
-   *"November invoicing is open, due 3 Dec. Your invoices aren't issued yet."*
+   that coach's `<slug>.me` and `factory/business` (`invoice_day`).
+2. From the month's invoice day, if `invoice-lists/` has no list for that month, say so first:
+   *"Your November invoices aren't issued yet. They were due on the 24th."*
 
 ## "Who do you work for?"
 

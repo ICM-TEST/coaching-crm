@@ -31,7 +31,7 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 | "list the clients" | read `hub/clients` (by coach: `scripts/coaches.py list` gives the counts) | — |
 | "check intake" / new form responses | [skills/intake.md](skills/intake.md) | the intake proposal |
 | "assign / move <client> to <coach>" | [skills/assign.md](skills/assign.md) | before rebuilding lists if anything is ambiguous |
-| "open <month> invoicing" / "who's done <month>?" | [skills/invoicing-run.md](skills/invoicing-run.md) | — |
+| "who's done <month>?" / "open <month> invoicing" | [skills/invoicing-run.md](skills/invoicing-run.md) (nobody opens a month) | — |
 | "run recon" (bank statement) | [skills/recon.md](skills/recon.md) → Recon 1 | the bank proposal |
 | a POP arrives / "do the POP recon" | [skills/recon.md](skills/recon.md) → Recon 2 | the POP proposal |
 | "push" (after deciding a proposal) | [skills/recon.md](skills/recon.md) → Push | — |
@@ -54,11 +54,7 @@ Every job is read → run → write ([../../shared/connectors.md](../../shared/c
 | `scripts/coaches.py add\|list\|leave\|share\|welcome\|unshare` | the list of coaches, and the step-by-step texts for sharing, a coach's setup and removing access |
 | `scripts/clients.py details\|import` | the details kept about each client, and bringing in an existing list |
 | `scripts/build_lists.py coach-clients` | list of coaches + list of clients → each coach's `<slug>.me` and `clients` |
-| `scripts/runs.py open\|status` | open a run; who's done |
+| `scripts/runs.py status` | who's done a month |
 | `scripts/recon.py bank\|pops\|push` | the two recons |
 | `scripts/recon.py write-off` | record a write-off the head coach agreed with a coach (not a recon) |
 
-## Notifying coaches
-
-Leave a Drive comment on the coach's file that @-mentions them (Google emails them). The text names the file
-and date only, for example *"@<coach> unpaid list updated <date>"*, never a client or an amount.

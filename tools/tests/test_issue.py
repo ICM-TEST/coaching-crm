@@ -72,10 +72,6 @@ class Issue(unittest.TestCase):
             "# My clients\n\n## Clients\nid,name,phone,email,status,since\n"
             "C0001,Ann Example,+27820000002,,active,2026-10-01\n"
             "C0002,Bo Example,+27820000003,,active,2026-10-01\n")
-        # what the head coach's side does when it opens the run: the run is listed, and the month's folder exists
-        runs = self.root / "factory/invoicing-runs.csv"
-        runs.write_text(runs.read_text() + "2026-10,2026-10-20,2026-10-24,open\n")
-        (self.root / "coach-riley/invoices/2026-10").mkdir(parents=True)
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
@@ -139,15 +135,13 @@ class Issue(unittest.TestCase):
         out = self.issue(self.DRAFTS, ok=(1,))
         self.assertIn("already issued", out)                                            # one run, one list
 
-    def test_never_makes_folders_and_needs_an_open_run(self):
-        shutil.rmtree(self.root / "coach-riley/invoices/2026-10")
-        out = self.issue(self.DRAFTS, ok=(1,))
-        self.assertIn("invoices/2026-10/ doesn't exist", out)
-        self.assertIn("Never create it yourself", out)
-        self.assertFalse((self.root / "coach-riley/invoices/2026-10").exists(), "the generator made no folder")
-        runs = self.root / "factory/invoicing-runs.csv"
-        runs.write_text(runs.read_text().replace("2026-10,2026-10-20,2026-10-24,open\n", ""))
-        self.assertIn("hasn't opened 2026-10 invoicing yet", self.issue(self.DRAFTS, ok=(1,)))
+    def test_makes_its_own_month_folder(self):
+        month = self.root / "coach-riley/invoices/2026-10"
+        self.assertFalse(month.exists())                                 # nobody opens a month first
+        self.issue(self.DRAFTS, "--dry-run")
+        self.assertFalse(month.exists(), "a dry run makes nothing")
+        self.issue(self.DRAFTS)
+        self.assertTrue(list(month.glob("*.pdf")))
 
     def test_refusals(self):
         bad = {"invoices": [
