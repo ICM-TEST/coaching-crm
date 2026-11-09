@@ -10,8 +10,10 @@ Keep each message short. "Skip" is fine where marked.
 other Projects or anything you know about this business. Never name a bank, country or format they haven't
 given: ask about "your bank" and "your invoices". The `<placeholders>` in the templates say what to ask for, nothing more.
 
-1. **Which folder?** The name of the Shared Drive (or the shared folder standing in for it). Find it with the Drive
-   connector and read back its name. If it isn't empty, say what's in it and ask before going on.
+1. **Which folder?** Ask what the business's folder is called, and offer to make it: *"What's your business's folder
+   called? If you don't have one yet, give it a name and I'll create it in your Google Drive."* Look for it with the
+   Drive connector. Found: read back its name; if it isn't empty, say what's in it and ask before going on. Not found:
+   it's new, and it's created at the build (inside the shared drive they name, otherwise in their My Drive).
 2. **The business, as printed on the invoices:** trading name, website (skip), account holder, bank name, branch code
    (skip), account type (skip), and account number. Don't ask about currency: amounts are in Rand (R).
 3. **Invoice wording:** show the default `payment_instruction`, `pop_request`, `thanks` from `factory/business`, and ask them
@@ -39,8 +41,8 @@ Follow [../shared/connectors.md](../shared/connectors.md).
    (`name`, `slug`, `role: head-coach`).
 4. If the head coach coaches: `python3 scripts/coaches.py --root <work> add --name … --phone … --email … --invoice-start …`.
    They get coach number 01 and their own folder. Other coaches come after setup, one at a time (*Finish*).
-5. `python3 scripts/sync.py plan <work> --role head-coach --json`. Carry out its steps in order, inside the folder from
-   question 1, without a word in the chat until it's done. If a write fails, re-read what's on the drive and do only the
+5. `python3 scripts/sync.py plan <work> --role head-coach --json`. If the folder from question 1 is new, create it first.
+   Then carry out the plan's steps in order inside it, without a word in the chat until it's done. If a write fails, re-read what's on the drive and do only the
    steps still missing.
 6. List the folders on the drive and re-read one Sheet to check the phones came back exact.
 
