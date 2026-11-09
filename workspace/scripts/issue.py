@@ -44,7 +44,7 @@ from crm.books import GENERATOR, LIST_COLUMNS, file_hash, invoice_lists, list_se
 from crm.common import ZERO, coach_me, fmt, frontmatter, is_placeholder, money, read_sections, read_table, write_sheet  # noqa: E402
 
 
-CURRENCY = {"symbol": ""}                   # currency_symbol from factory/business, set when the run is planned
+CURRENCY = {"symbol": "R"}                  # Rand unless factory/business sets currency_symbol; set when the run is planned
 
 
 def money_text(amount: Decimal) -> str:
@@ -92,7 +92,7 @@ def plan(root: Path, coach_dir: str, period: str, drafts: dict, issue_date: str 
     if unset:
         raise Refused("factory/business isn't finished: " + ", ".join(unset) + " still hold a <placeholder>. The head "
                       "coach fills each one in, or leaves it blank, before any invoice is issued.")
-    CURRENCY["symbol"] = str(biz.get("currency_symbol") or "").strip()
+    CURRENCY["symbol"] = str(biz.get("currency_symbol", "R")).strip()     # Rand by default
     if me.get("role") != "coach" or not me.get("code"):
         raise Refused(f"{me_doc} isn't a coach's details Doc")
     coach_no = str(me.get("coach_number", "")).strip()

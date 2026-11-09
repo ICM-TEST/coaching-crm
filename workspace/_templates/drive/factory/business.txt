@@ -5,7 +5,7 @@ bank: <bank name>
 branch_code: <branch code, or blank>
 account_type: <account type, or blank>
 account_number: <account number>
-currency_symbol: <printed before every amount>
+currency_symbol: R
 payment_instruction: "Please pay the above amount by bank transfer, using {reference} as your reference:"
 pop_request: "Please send your coach the proof of payment once paid."
 thanks: "Thank you."
@@ -25,5 +25,7 @@ Anything still in <angle brackets> is a placeholder: no invoice is issued until 
 - invoice_number_format: how the invoice number is printed; it's also the payment reference. {year} is the invoice year,
   {coach} the coach's own number (coach_number in their .me Doc), {seq} the coach's running invoice number:
   2026-03-490. Unique across all coaches.
+- currency_symbol: printed before every amount: R, for Rand. Setup doesn't ask; change it here only if the business
+  invoices in another currency.
 - invoice_day: the day of the month invoices go out. Each month's invoicing run is due that day.
 - payment_terms: invoices are due on receipt, so the due date is the invoice date and days unpaid count from it.

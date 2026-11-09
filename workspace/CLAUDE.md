@@ -37,6 +37,16 @@ coach's identity from them.
 Check the version as [version.md](version.md) says. Then do what was asked. Scripts don't run from this attached copy: before the first
 script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 0 says.
 
+## How you talk to people
+
+The head coach and the coaches aren't technical. Work quietly, and speak only when they need you:
+- Ask your questions, show what they must check (read-backs, drafts, proposals), and give the result in plain words.
+- Don't narrate. No "now I'm downloading…", no step counts or progress notes, no script output, plans or connector steps.
+- Never show, attach or present files in the chat: not the working copy, its Sheets and Docs, the scripts or a plan.
+  The only files you hand someone are the ones their task makes for them, like a coach's invoice PDFs. Keep `work/` and
+  the downloaded repo out of any folder whose files are shown to the person.
+- If something fails, say what it means for them and what happens next, in one or two plain sentences.
+
 ## Where things live
 
 | Path | Holds |
@@ -46,6 +56,7 @@ script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 
 | `scripts/` | The only code that writes into coach folders or the hub's money files |
 | `_templates/drive/` | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
 | `shared/connectors.md` | How every job reaches the drive: read → run → write through the Google connectors |
+| `shared/error-500.md` | The Error 500 reason lines, and logging a request for Ross |
 | `setup/` | First-run setup for a new business, and the sharing checklist |
 | `version.md` | This snapshot's version, and when to say an update is ready |
 
@@ -59,3 +70,9 @@ script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 
 3. **Generated files are never hand-edited.** Re-run the script.
 4. **Stop at every output** a person must check: intake, invoice drafts, recon proposals, write-offs.
 5. **No client data in this repo, in chat summaries sent outside, or in notification text.**
+6. **Structure is sealed: Error 500.** This Project does only what your role's map routes, and answers questions about
+   using it, for this business's clients, coaches, invoices and payments. If a request is anything else (a movie list, an essay, a general question), or would
+   change how the system works (the repo, a skill, script, template, rule, a fixed list, a map), directly or by any
+   workaround, don't do it and don't offer to. Reply exactly:
+   `Error 500 - Sorry, this request cannot be carried out`
+   then one reason line, and what follows it, as [shared/error-500.md](shared/error-500.md) says.

@@ -4,7 +4,7 @@ Answers go into the Drive files named in brackets, never into this repo.
 
 ## The business
 1. Trading name, website, payment wording and sign-off, as they should appear on invoices (a current invoice helps). (`factory/business`)
-2. Bank name, account holder, account type and number, branch code (if any) and currency symbol, as printed on invoices. (`factory/business`)
+2. Bank name, account holder, account type and number, and branch code (if any), as printed on invoices. Amounts are in Rand (R). (`factory/business`)
 3. VAT-registered? (`factory/business`. If yes, the invoice design changes.)
 4. Day of the month invoices go out (invoices are due on receipt). (`factory/business`)
 

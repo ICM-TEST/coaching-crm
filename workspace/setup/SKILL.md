@@ -7,13 +7,13 @@ Head coach only, once per business. Their Drive has no `hub/` yet. If it has one
 Keep each message short. "Skip" is fine where marked.
 
 **Every answer comes from the person, in this chat.** Never fill one in or suggest one from memory, earlier chats,
-other Projects or anything you know about this business. Never name a bank, country, currency or format they haven't
+other Projects or anything you know about this business. Never name a bank, country or format they haven't
 given: ask about "your bank" and "your invoices". The `<placeholders>` in the templates say what to ask for, nothing more.
 
 1. **Which folder?** The name of the Shared Drive (or the shared folder standing in for it). Find it with the Drive
    connector and read back its name. If it isn't empty, say what's in it and ask before going on.
 2. **The business, as printed on the invoices:** trading name, website (skip), account holder, bank name, branch code
-   (skip), account type (skip), account number, and the currency symbol printed before amounts.
+   (skip), account type (skip), and account number. Don't ask about currency: amounts are in Rand (R).
 3. **Invoice wording:** show the default `payment_instruction`, `pop_request`, `thanks` from `factory/business`, and ask them
    to keep it or paste their own. Then the sign-off.
 4. **Invoice day:** the day of the month invoices go out (1 to 28). Invoices are due on receipt.
@@ -39,15 +39,15 @@ Follow [../shared/connectors.md](../shared/connectors.md).
    (`name`, `slug`, `role: head-coach`).
 4. If the head coach coaches: `python3 scripts/coaches.py --root <work> add --name … --phone … --email … --invoice-start …`.
    They get coach number 01 and their own folder. Other coaches come after setup, one at a time (*Finish*).
-5. `python3 scripts/sync.py plan <work> --role head-coach --json`. Say how many steps it lists, then carry them out in
-   order inside the folder from question 1, with a one-line progress note every so often. If a write fails, re-read what's on
-   the drive and do only the steps still missing.
+5. `python3 scripts/sync.py plan <work> --role head-coach --json`. Carry out its steps in order, inside the folder from
+   question 1, without a word in the chat until it's done. If a write fails, re-read what's on the drive and do only the
+   steps still missing.
 6. List the folders on the drive and re-read one Sheet to check the phones came back exact.
 
 ## Finish
 
-Tell them, in this order:
-- What was created, and anything that failed.
+When it's done, tell them in one plain line: "Your drive is set up." Don't list what was made, and show no files. Then:
+- Only if something failed: what, in plain words, and what happens next.
 - Their next steps, numbered, and offer to start the first one now. Each one, I guide you through step by step:
   1. **Add your coaches**, one at a time: say "add a coach". For each, I give you the steps to share their folders with
      them, and a step-by-step setup message to send them ([../roles/head-coach/skills/coaches.md](../roles/head-coach/skills/coaches.md)).

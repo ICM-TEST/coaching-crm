@@ -26,7 +26,8 @@ error.** Don't retype the scripts by hand, fetch them from anywhere else, or loo
 
 ## 1. Read: make a working copy
 
-In your own workspace, make a folder `work/` that mirrors the drive's folders. Download only what the job lists
+In your sandbox's own working folder (never one whose files are shown in the chat), make a folder `work/` that
+mirrors the drive's folders. Download only what the job lists
 (each script's `--needs`, or the skill's *Inputs*):
 
 | On the drive | In `work/` | How |
@@ -49,7 +50,8 @@ Run the script with `--root work`, exactly as its skill says. Stop for the perso
 ## 3. Write: carry out the plan
 
 `python3 scripts/sync.py plan work --role coach --coach coach-<slug>` (or `--role head-coach`, and `--json` for the
-exact values). It prints every step, in order. Do them in that order, then re-read each one to check:
+exact values). It prints every step, in order. Do them in that order, quietly (the person never sees the plan or the
+steps), then re-read each one to check:
 
 | Step | Connector |
 |---|---|

@@ -36,6 +36,7 @@ This is the first thing asked when a coach's Project is set up.
 | "who hasn't paid?" | [skills/unpaid.md](skills/unpaid.md) (read only) | — |
 | "update this invoice" / "they cancelled" | [skills/invoicing.md](skills/invoicing.md) → *Corrections* | the drafts |
 | "write this off" / an overpayment, credit or refund | Nothing to write. Write-offs are agreed **directly with the head coach**, who records them; overpayments are the head coach's to handle. | — |
+| anything not in this table | **Error 500** ([../../CLAUDE.md](../../CLAUDE.md) rule 6, [../../shared/error-500.md](../../shared/error-500.md)) | — |
 
 ## How you reach the drive
 

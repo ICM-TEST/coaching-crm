@@ -26,6 +26,7 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 | "add a client <details>" | [skills/assign.md](skills/assign.md) → *Add one by hand* | confirm the details and coach |
 | "add a coach" / "<coach> is leaving" | [skills/coaches.md](skills/coaches.md) | the details read back, before anything is written |
 | "list the coaches" | `scripts/coaches.py list` | — |
+| "who do you work for?" | Answer plainly: the head coach's name from `hub/<slug>.me`, the business, and that you can open `hub/` | — |
 | "what do we keep about clients?" / "set up my client form" / "bring in my clients" | [skills/client-setup.md](skills/client-setup.md) | each part's read-back |
 | "list the clients" | read `hub/clients` (by coach: `scripts/coaches.py list` gives the counts) | — |
 | "check intake" / new form responses | [skills/intake.md](skills/intake.md) | the intake proposal |
@@ -40,6 +41,7 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 | "what's outstanding?" / "who hasn't paid?" | read `hub/summary`: unpaid invoices across every coach, longest unpaid first | — |
 | overpayments / credits / refunds | read `hub/summary` → Overpayments. Handled in the head coach's own accounting system, not here. | — |
 | their own invoicing, unpaid | switch to [../coach/CLAUDE.md](../coach/CLAUDE.md) **inside `coach-<their slug>/` only** | as that role says |
+| anything not in this table | **Error 500** ([../../CLAUDE.md](../../CLAUDE.md) rule 6, [../../shared/error-500.md](../../shared/error-500.md)) | — |
 
 ## Scripts
 

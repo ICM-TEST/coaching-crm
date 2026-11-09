@@ -46,7 +46,7 @@ class Setup(unittest.TestCase):
         for expected in ("hub", "factory", "_archive", "hub/recon", "factory/invoice-template", "coach-riley/invoice-lists",
                          "coach-riley/invoices", "coach-riley/pops", "hub/clients", "hub/coaches", "hub/morgan.me",
                          "factory/release", "coach-riley/riley.me", "coach-riley/clients", "coach-riley/unpaid",
-                         "factory/client-form", "hub/bank/lines"):
+                         "factory/client-form", "hub/bank/lines", "hub/requests"):
             self.assertIn(expected, paths)
         self.assertFalse({"hub/me", "coach-riley/me", "hub/settings"} & paths, "every .me Doc is named after its person")
         self.assertFalse([p for p in paths if p.endswith(".ttf")])

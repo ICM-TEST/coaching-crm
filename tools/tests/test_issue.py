@@ -178,6 +178,11 @@ class Issue(unittest.TestCase):
         self.assertIn("isn't finished", out)                     # the template's <placeholders> are still there
         self.assertIn("invoice_day", out)
 
+    def test_amounts_are_in_rand_unless_the_business_says_otherwise(self):
+        biz = self.root / "factory/business.txt"
+        biz.write_text(biz.read_text().replace("currency_symbol: R\n", ""))
+        self.assertIn("R1,440.00", self.issue(self.DRAFTS, "--dry-run"))
+
     def test_nothing_to_bill_still_marks_the_run_done(self):
         self.issue({"invoices": []})
         self.assertEqual(read_table(self.root / "coach-riley/invoice-lists/2026-10.csv"), [])
