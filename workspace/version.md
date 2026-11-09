@@ -1,5 +1,5 @@
 ---
-version: 0.3.2
+version: 0.3.3
 released: 2026-11-09
 ---
 
@@ -24,3 +24,4 @@ Then carry on normally. Never refuse work because the snapshot is behind. If `fa
 - 0.3.0 (2026-11-09): Guided onboarding; blank-slate wording; any bank's CSV or PDF statements; <slug>.me Docs; scripts via git
 - 0.3.1 (2026-11-09): Only the Project instruction and the drive say who Claude works for
 - 0.3.2 (2026-11-09): Rand by default; work quietly; Error 500 for anything outside the system
+- 0.3.3 (2026-11-09): Setup offers to create the business folder
