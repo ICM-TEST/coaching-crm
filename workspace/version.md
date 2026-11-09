@@ -1,6 +1,6 @@
 ---
-version: 0.2.0
-released: 2026-11-06
+version: 0.2.1
+released: 2026-11-09
 ---
 
 # Structure version
@@ -20,3 +20,4 @@ Then carry on normally. Never refuse work because the snapshot is behind. If `fa
 
 - 0.1.0 (2026-11-06): first public release.
 - 0.2.0 (2026-11-06): First-run setup; scripts come from the public repo
+- 0.2.1 (2026-11-09): The whole repo is attached to every Project; agents work only from workspace/
