@@ -1,4 +1,7 @@
-# tools: Ross only, never attached to a Project
+# tools: Ross only
+
+Attached to every Project with the rest of the repo, but no Project's Claude runs anything here or takes its
+made-up data as real ([../workspace/CLAUDE.md](../workspace/CLAUDE.md) says so).
 
 | Tool | Job |
 |---|---|

@@ -15,7 +15,7 @@ Done once per business, by Ross with the head coach. Order matters: sharing is t
 4. Create the Google Form (the head coach's account) with the questions Ross gives you. Link it to a response Sheet in `hub/`.
 5. **Ross reads the folder tree and [sharing-checklist.md](sharing-checklist.md) before any sharing is applied.**
 6. Apply the sharing exactly as the checklist says. Tick each line.
-7. Ross sets up one Claude Project per person: `workspace/` attached from GitHub, code execution on, and the Google
+7. Ross sets up one Claude Project per person: the whole repo attached from GitHub (every folder ticked), code execution on, and the Google
    connectors under their own account. `scripts/coaches.py instructions <slug>` or `instructions head-coach` prints each
    person's Project instruction. Every job is then read → run → write ([../shared/connectors.md](../shared/connectors.md)).
 

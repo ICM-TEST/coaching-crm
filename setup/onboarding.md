@@ -9,7 +9,8 @@ The head coach says "set up my workspace" ([../workspace/setup/SKILL.md](../work
 ## 2. Each person's Claude, at claude.ai on a computer
 1. Turn on code execution, and connect Google Drive, Sheets and Docs under **their own** Google account.
 2. Create a Project.
-3. Project knowledge → **Add from GitHub** → this repo → **Configure files**: tick only `workspace`.
+3. Project knowledge → **Add from GitHub** → this repo, with every folder ticked: the whole repo is attached.
+   Its `workspace/CLAUDE.md` tells Claude to work only from `workspace/`.
 4. Paste their instruction into the **Instructions** panel: the head coach's from [project-instructions.md](project-instructions.md), a coach's from `scripts/coaches.py instructions <slug>`.
 5. **Sync** once.
 

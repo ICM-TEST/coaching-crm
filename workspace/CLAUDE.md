@@ -6,7 +6,7 @@ Google Shared Drive. Nothing in this repo is client data, and nothing you do may
 
 ## Who are you working for?
 
-Everyone's Claude reads this same `workspace/` folder, attached read-only from a public GitHub repo. **Your Claude Project's instruction names who you work for**, for example
+Everyone's Claude has this same public GitHub repo attached, whole and read-only. **`workspace/` is yours: you work only from here.** The repo's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. Every path in these rules is inside `workspace/`, so `setup/` always means `workspace/setup/`. **Your Claude Project's instruction names who you work for**, for example
 *"You are the Claude for Ayanda Dlamini, coach 02 … Data: coach-ayanda/ and factory/ in Google Drive"*. The head coach's Claude makes that
 instruction when it adds the coach (`scripts/coaches.py add`, or `instructions <slug>` to show it again).
 

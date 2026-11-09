@@ -6,20 +6,24 @@ account. This repo holds the **structure**. Each business's **data** lives in it
 > **No client data ever lives in this repo. It's public.** If you see a real name, phone number or bank detail in a commit,
 > treat it as a leak.
 
+**Claude:** start at [workspace/CLAUDE.md](workspace/CLAUDE.md). Everything outside `workspace/` is Ross's.
+
 ## Two roots
 
 | Root | Where | Who reads it | Who changes it |
 |---|---|---|---|
-| **Structure** | `workspace/`, public, attached to each person's Claude Project as knowledge | Each person's Claude, and anyone else, so it never holds client data | Only Ross |
+| **Structure** | This whole repo, public, attached to each person's Claude Project as knowledge | Each person's Claude, and anyone else, so it never holds client data | Only Ross |
 | **Data** | The business's Google Shared Drive, shared folder by folder | Each person's Claude, limited by Drive sharing | Each role, through the scripts |
 
 ## Layout
 
-| Folder | What | Attached to Projects? |
+| Folder | What | Who uses it |
 |---|---|---|
-| `workspace/` | Rules, skills, scripts and Drive templates. Agents start at [workspace/CLAUDE.md](workspace/CLAUDE.md) | **Yes**, the only folder attached |
-| `setup/` | Ross's onboarding and questionnaire | No |
-| `tools/` | Ross's tests, release and font tools | No |
+| `workspace/` | Rules, skills, scripts and Drive templates. Agents start at [workspace/CLAUDE.md](workspace/CLAUDE.md) | Everyone's Claude |
+| `setup/` | Ross's onboarding and questionnaire | Ross only |
+| `tools/` | Ross's tests, release and font tools | Ross only |
+
+All three are attached to every Project. Agents work only from `workspace/`.
 
 ## Changing the live system
 
@@ -41,7 +45,7 @@ account. This repo holds the **structure**. Each business's **data** lives in it
 | `issue.py`: the invoice generator (a coach's two outputs) | built, tested; matches the business's own invoice, in Inter (included, trimmed, SIL OFL); ~40 KB per PDF; needs reportlab |
 | Drive templates: `.csv` = Google Sheet, `.txt` = Google Doc | drafted |
 | `sync.py`: working-copy changes → Google connector steps, with each role's limits | built, tested |
-| Morgan's `all-invoices` copy of every sealed invoice | built, tested |
+| The head coach's `all-invoices` copy of every sealed invoice | built, tested |
 | `coaches.py`: the list of coaches (add with next coach number, list, leave) | built, tested |
 | `build_lists.py`: each coach's `me` and client list, books | built, tested |
 | `runs.py`: invoicing run gate | built, tested |
