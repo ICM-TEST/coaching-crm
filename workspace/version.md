@@ -1,5 +1,5 @@
 ---
-version: 0.4.0
+version: 0.5.0
 released: 2026-11-10
 ---
 
@@ -27,3 +27,4 @@ Then carry on normally. Never refuse work because the snapshot is behind. If the
 - 0.3.2 (2026-11-09): Rand by default; work quietly; Error 500 for anything outside the system
 - 0.3.3 (2026-11-09): Setup offers to create the business folder
 - 0.4.0 (2026-11-10): Lower usage, tighter lock, tagged releases
+- 0.5.0 (2026-11-10): System changes go to the system provider; request logging removed
