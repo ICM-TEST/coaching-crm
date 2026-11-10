@@ -8,7 +8,7 @@
 In the working copy a Sheet is a .csv and a Doc a .txt (same folders, same names without the extension on the
 drive). The plan says, per file: create a folder, upload a PDF, create a Sheet or Doc, append rows to a Sheet, clear and
 rewrite a Sheet, replace a Doc's text, add a dropdown, lock a file. It refuses anything the role may not do: a coach's
-Claude may only upload its PDFs into a month folder that already exists and create its invoice-list Sheets.
+Claude writes only its invoice-list Sheets to the drive. Its PDFs are handed to the coach in the chat ("hand_over").
 """
 from __future__ import annotations
 
@@ -117,7 +117,17 @@ def plan(work: Path, role: str, coach: str) -> tuple[list[dict], list[str]]:
             ops.append({"op": "upload", "path": rel, "folder": folder, "mime": mime})
     for rel in sorted(set(old_files) - files):
         ops.append({"op": "refused", "path": rel, "why": "deleted: nothing in this system deletes files"})
-    ops += lists_last                                           # the invoice list goes up after its PDFs
+    if role == "coach":                                         # a coach's PDFs go to the coach in the chat, never
+        month = re.compile(rf"{re.escape(coach)}/invoices/\d{{4}}-\d{{2}}")          # through a connector
+        handed = []
+        for o in ops:
+            if o["op"] == "create_folder" and month.fullmatch(o["path"]):
+                continue
+            if o["op"] == "upload" and o["path"].endswith(".pdf") and month.fullmatch(o["path"].rsplit("/", 1)[0]):
+                o = {"op": "hand_over", "path": o["path"]}
+            handed.append(o)
+        ops = handed
+    ops += lists_last                                           # the invoice list is written last
     for op in list(ops):
         if op["op"] in ("upload", "create_sheet") and op["path"].split("/", 1)[0].startswith("coach-") \
                 and ("/invoices/" in op["path"] or "/invoice-lists/" in op["path"]):
@@ -128,17 +138,14 @@ def plan(work: Path, role: str, coach: str) -> tuple[list[dict], list[str]]:
 
     problems = [f"{o['path']}: {o['why']}" for o in ops if o["op"] == "refused"]
     for o in ops:
-        if o["op"] in ("refused", "lock"):
+        if o["op"] in ("refused", "lock", "hand_over"):
             continue
         p = o["path"]
         if role == "coach":
-            month = re.compile(rf"{re.escape(coach)}/invoices/\d{{4}}-\d{{2}}")      # the only folder a coach makes
-            ok = (o["op"] == "create_folder" and month.fullmatch(p)) or \
-                 (o["op"] == "upload" and p.endswith(".pdf") and month.fullmatch(p.rsplit("/", 1)[0])) or \
-                 (o["op"] == "create_sheet" and p.startswith(f"{coach}/invoice-lists/"))
+            ok = o["op"] == "create_sheet" and re.fullmatch(rf"{re.escape(coach)}/invoice-lists/[^/]+", p)
             if not ok:
-                problems.append(f"{p}: a coach's Claude may only make its month folder in invoices/, upload its PDFs "
-                                f"into it, and create its invoice-list Sheets (not '{o['op']}')")
+                problems.append(f"{p}: a coach's Claude writes only its invoice-list Sheets to the drive, and hands its "
+                                f"PDFs to the coach (not '{o['op']}')")
         elif role == "head-coach":
             top = p.split("/", 1)[0]
             if top.startswith("coach-") and not (o["op"] == "create_folder" or p == f"{top}/{top.removeprefix('coach-')}.me" or p.endswith(("/clients", "/unpaid"))
@@ -164,6 +171,8 @@ def describe(op: dict) -> str:
         return f"clear and rewrite Sheet {op['path']} ({len(op['values'])} rows)"
     if o in ("create_doc", "replace_doc"):
         return f"{'create' if o == 'create_doc' else 'replace the text of'} Doc {op['path']}"
+    if o == "hand_over":
+        return f"hand {op['path'].rsplit('/', 1)[-1]} to the coach in the chat (not written to the drive)"
     if o == "lock":
         return f"lock {op['path']} read-only"
     return f"REFUSED {op['path']}: {op.get('why', '')}"

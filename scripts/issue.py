@@ -369,18 +369,17 @@ def issue(run: dict) -> Path:
 NEEDS = ["{coach}/{slug}.me  (Doc, as .txt)", "{coach}/clients  (Sheet, as .csv)", "{coach}/invoice-lists/*  (Sheets, as .csv)",
          "{coach}/unpaid  (Sheet, as .csv)",
          "factory/business  (Doc, as .txt)", "factory/billable-work  (Sheet, as .csv)",
-         "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)",
-         "{coach}/invoices/<month>/   (folder only: if it's already on the drive, make the same empty folder in the "
-         "working copy before the snapshot; if not, leave it: the generator makes it and the plan creates it)"]
+         "factory/invoice-template/fonts/*.ttf  (copy from the downloaded repo's _templates, not the drive)"]
 
 
 def uploads(run: dict, out: Path) -> str:
-    """What to put back on the drive through the connector, in order: the PDFs, then the list (its existence = done)."""
+    """What happens after issue: the PDFs go to the coach in the chat, and only the list is written to the drive."""
     coach = run["folder"].name
-    lines = ["Upload, in this order, then lock each file read-only:"]
+    lines = ["Hand these PDFs to the coach in the chat (they aren't written to the drive):"]
     for doc in run["docs"]:
-        lines.append(f"  {coach}/invoices/{run['period']}/{pdf_name(doc)}   (application/pdf)")
-    lines.append(f"  {coach}/invoice-lists/{out.stem}   (a new Google Sheet, from {out.name}) — LAST")
+        lines.append(f"  {pdf_name(doc)}")
+    lines.append("Then write to the drive, and lock it read-only:")
+    lines.append(f"  {coach}/invoice-lists/{out.stem}   (a new Google Sheet, from {out.name})")
     return "\n".join(lines)
 
 

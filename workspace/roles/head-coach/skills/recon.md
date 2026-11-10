@@ -1,8 +1,15 @@
 # Skill — the two recons
 
 Every recon is read → run → write through the connectors: [../../../shared/connectors.md](../../../shared/connectors.md).
-**Read** for a recon: all of `hub/` (Sheets as CSV, Docs as text; bank statements and POPs aren't downloaded), every
-coach's `invoice-lists` Sheets, and a `.drive-index.csv` listing every coach folder's files and every file in `hub/bank/`.
+**Read** for a recon, in this order, and nothing more:
+1. All of `hub/` (Sheets as CSV, Docs as text; bank statements and POPs aren't downloaded), plus `factory/business` and
+   `factory/release`.
+2. One folder listing per coach folder and one of `hub/bank/`, written to `.drive-index.csv` (`path`, `size`,
+   `modified`). No file is opened for this.
+3. `python3 scripts/recon.py --root work lists-needed`. It names the invoice lists to download: the new ones, and any
+   changed since the head coach's copy was taken. **Download only those.** Every other list is already in
+   `hub/all-invoices`, and the books work from that copy.
+
 **Write**: `python3 scripts/sync.py plan work --role head-coach`, then carry it out. To **push**, download the
 proposal Sheet again first, so the head coach's dropdown choices are in the working copy.
 

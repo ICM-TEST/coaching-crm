@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 from crm.common import append_rows, frontmatter, read_table  # noqa: E402
 

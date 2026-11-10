@@ -20,7 +20,7 @@ some sandboxes block:
 curl -sSL https://github.com/ICM-TEST/coaching-crm/archive/refs/heads/main.tar.gz | tar xz
 ```
 
-Run every `python3 scripts/…` from `coaching-crm-main/workspace`, with `--root` and `work` as the full path of your `work/`.
+Run every `python3 scripts/…` from `coaching-crm-main`, with `--root` and `work` as the full path of your `work/`.
 If the folder is already there, use it. **These are the only two ways. If they fail, stop and tell the person the exact
 error.** Don't retype the scripts by hand, fetch them from anywhere else, or look for another way.
 
@@ -38,8 +38,12 @@ mirrors the drive's folders. Download only what the job lists
 | the invoice fonts (coach, when issuing) | `work/factory/invoice-template/fonts/` | Copy from `_templates/drive/factory/invoice-template/fonts/` in the downloaded repo, before the snapshot. They aren't on the drive |
 | an empty folder the job needs | make the same folder | (check it exists on the drive first) |
 
-Files you need to know about but not open (a recon's PDFs, POPs) go in `work/.drive-index.csv`, with columns
-`path` and `size`, from a folder listing. The folder checks use it.
+**Download nothing the job doesn't list.** One download is one Drive call: never fetch a file to "have a look", and
+never fetch the same file twice in a chat.
+
+Files you need to know about but not open (a recon's PDFs, POPs, invoice lists already copied) go in
+`work/.drive-index.csv`, with columns `path`, `size` and `modified` (the file's last-modified date, YYYY-MM-DD), from a
+folder listing. The folder checks use it, and `recon.py lists-needed` uses it to say which invoice lists to download.
 
 Then: `python3 scripts/sync.py snapshot work`
 
@@ -51,12 +55,15 @@ Run the script with `--root work`, exactly as its skill says. Stop for the perso
 
 `python3 scripts/sync.py plan work --role coach --coach coach-<slug>` (or `--role head-coach`, and `--json` for the
 exact values). It prints every step, in order. Do them in that order, quietly (the person never sees the plan or the
-steps), then re-read each one to check:
+steps). **Don't re-read each file afterwards.** A connector call that returns without an error has landed. When the plan
+is done, check once: list each folder you wrote into, and re-read one Sheet that holds phone numbers or references to
+see the values came back exact. Re-read another file only if a call failed or that check is wrong.
 
 | Step | Connector |
 |---|---|
 | create folder | Drive: create a file with the folder type, in its parent *(head coach only)* |
-| upload a PDF | Drive: create file, base64 content, `application/pdf`, no conversion |
+| hand over (coach's PDFs) | no connector: give the coach the file in the chat. A coach's PDFs are never uploaded |
+| upload a file *(head coach only)* | Drive: create file, base64 content, no conversion |
 | create Sheet | Drive: create a Google Sheet in the folder. Sheets: format the whole sheet as plain text (`repeatCell`, `numberFormat` type `TEXT`), then write the values from A1. Add the dropdown if the plan gives one (Sheets: data validation on that column). Never create a Sheet by uploading a CSV: the conversion changes the values |
 | append rows | Sheets: append the values to the Sheet |
 | clear and rewrite | Sheets: clear the Sheet, then write the values from A1 |
@@ -70,8 +77,8 @@ The apostrophe isn't stored in the value and doesn't come back in the CSV export
 value any other way.
 
 If the plan says **Refused**, write nothing at all and tell the person why. It means the job tried something its role
-may not do. A coach's Claude may only upload PDFs into a month folder that already exists and create its own
-invoice-list Sheets. It never creates folders, never edits a Sheet or Doc, and never deletes anything. Nothing in the
+may not do. A coach's Claude writes one kind of thing to the drive: its own invoice-list Sheets. It never uploads a
+file, never creates folders, never edits a Sheet or Doc, and never deletes anything. Nothing in the
 system deletes files.
 
 If a write fails half-way, re-read what's on the drive, carry out only the steps still missing, and never run the

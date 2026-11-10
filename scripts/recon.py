@@ -32,7 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from crm.books import (ALLOC_COLUMNS, LEDGER_COLUMNS, REVIEW_COLUMNS, Books, build_client_lists,  # noqa: E402
-                       build_coach_views, build_hub_views, build_me_files, drive_index)
+                       build_coach_views, build_hub_views, build_me_files, drive_index, lists_needed)
 from crm.common import (ZERO, Drive, append_rows, fmt, iso_date, money, read_sheet, read_table,  # noqa: E402
                         set_sheet_meta, today, write_sheet)
 from runs import gate  # noqa: E402
@@ -601,6 +601,16 @@ def write_off(root, invoice: str, amount: str | None, reason: str) -> int:
     return led.commit()
 
 
+def needed(root: str) -> int:
+    """Which invoice lists this recon has to download: new ones, and any changed since the head coach's copy was taken."""
+    need = lists_needed(Drive(root))
+    print("Download these invoice lists (Sheets, as .csv), and no others:" if need
+          else "No invoice lists to download: the head coach's copy already holds every list on the drive.")
+    for n in need:
+        print("  " + n)
+    return 0
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", required=True)
@@ -609,6 +619,7 @@ def main() -> None:
     b.add_argument("--month-end"); b.add_argument("--force", action="store_true")
     b.add_argument("--skip-balance-check", action="store_true", help="only when the head coach has checked the totals")
     sub.add_parser("pops", help="recon 2: proofs of payment against the unreconciled list")
+    sub.add_parser("lists-needed", help="before a recon: which invoice-list Sheets to download, from .drive-index.csv")
     q = sub.add_parser("push"); q.add_argument("proposal")
     w = sub.add_parser("write-off"); w.add_argument("invoice"); w.add_argument("--amount")
     w.add_argument("--reason", default="")
@@ -616,6 +627,7 @@ def main() -> None:
     sys.exit({
         "bank": lambda: bank(a.root, a.month_end, a.force, not a.skip_balance_check),
         "pops": lambda: pops(a.root),
+        "lists-needed": lambda: needed(a.root),
         "push": lambda: push(a.root, a.proposal),
         "write-off": lambda: write_off(a.root, a.invoice, a.amount, a.reason),
     }[a.cmd]())

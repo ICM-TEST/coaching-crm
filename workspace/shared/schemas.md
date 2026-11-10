@@ -24,6 +24,7 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 | File | Columns | Writer |
 |---|---|---|
 | `<slug>.me` (Doc) | the head coach's details: `name`, `slug`, `role: head-coach`. Every `.me` Doc is named after its person | setup |
+| `start` (Doc) | **generated: the one Doc the head coach's Claude reads on a start.** `coaches` · `clients` · `unallocated` (counts) · `client_form_link` · `release` (the latest released version) | the scripts, whenever a list changes. The head coach's Claude sets `client_form_link:` and `release:` by hand when it writes them to `factory/` |
 | `coaches` | **the head coach's list of coaches:** `number` (coach number, never reused) · `slug` · `code` · `name` · `phone` · `email` · `invoice_start` · `active` · `google_account` (what their folders are shared with) | `scripts/coaches.py` (add, leave); head coach for edits |
 | `clients` | **the head coach's list of clients:** `id` · `name` (full name, as printed on invoices) · `phone` (printed on invoices) · `email` · `status` (`new` · `active` · `unallocated`: their coach left · `left`) · `coach` (the last coach, while unallocated) · `since` · `notes` · then the head coach's own details, seen only here (`scripts/clients.py details`) | head coach; `clients.py import` |
 | `client-form responses` | the client form's answers, one column per question | Google Forms |
@@ -54,14 +55,14 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 
 ## coach-&lt;slug&gt;/ — one coach
 
-**A coach produces exactly two things per invoicing run: the run's invoice list and its PDFs.**
+**A coach produces exactly two things per invoicing run: the run's invoice list (on the drive) and its PDFs (handed to the coach).**
 Everything else in the folder comes from the head coach.
 
 | File | Holds | Writer |
 |---|---|---|
-| `<slug>.me` (Doc) | **generated from the coach's row in `hub/coaches`:** `name`, `slug`, `code`, `coach_number`, `phone`, `email` (printed on their invoices), `invoice_start`, `role: coach` | `build_lists.py` / every recon step |
+| `<slug>.me` (Doc) | **generated from the coach's row in `hub/coaches`:** `name`, `slug`, `code`, `coach_number`, `phone`, `email` (printed on their invoices), `invoice_start`, `role: coach`, then `invoice_day` and `release` copied from `factory/` so a coach's Claude starts on this one read | `build_lists.py` / every recon step |
 | `invoice-lists/<month>` | **Output 1.** One run's invoices (format below) | invoice generator (coach), once, at issue |
-| `invoices/<period>/*.pdf` | **Output 2.** The PDFs the coach sends to clients. The `<period>/` folder is made by the coach's own Claude when it first issues for that month | invoice generator (coach), at issue |
+| `invoices/` | **Output 2 is not kept here.** The PDFs are handed to the coach in the chat, and the coach sends them to clients. A coach may add copies here by hand; the recon checks any it finds against the list | the coach, by hand, if at all |
 | `clients` | this coach's clients: `id` · `name` · `phone` · `email` · `status` · `since`. Updates by itself when the head coach assigns or moves a client. | `build_lists.py` after every main-list change, and again at every recon step |
 | `unpaid` | **the only money information a coach gets:** their unpaid invoices, longest unpaid first (amount, still owed, days unpaid). An invoice not listed is settled. | `recon.py` |
 | `pops/` | proofs of payment from this coach's clients, uploaded by the coach (invoice number in the file name if known). Not a Claude output: the coach uploads them. The POP recon only uses them for **this coach's** invoices. | the coach, by hand |

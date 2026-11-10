@@ -9,8 +9,9 @@ The head coach says "set up my workspace" ([../workspace/setup/SKILL.md](../work
 ## 2. Each person's Claude, at claude.ai on a computer
 1. Turn on code execution, and connect Google Drive, Sheets and Docs under **their own** Google account.
 2. Create a Project.
-3. Project knowledge → **Add from GitHub** → this repo, with every folder ticked: the whole repo is attached.
-   Its `workspace/CLAUDE.md` tells Claude to work only from `workspace/`.
+3. Project knowledge → **Add from GitHub** → this repo → tick **only `workspace`**. It is pure markdown, about a quarter
+   of the repo. `scripts/` and `_templates/` are never attached: each job downloads them (`workspace/shared/connectors.md`
+   step 0), so attaching them only costs usage on every message.
 4. Paste their instruction into the **Instructions** panel: the head coach's from [project-instructions.md](project-instructions.md).
    A coach gets theirs inside the setup message the head coach's Claude makes (`scripts/coaches.py welcome <slug>`),
    which takes them through every step here.

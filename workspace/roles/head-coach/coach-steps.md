@@ -39,7 +39,7 @@ You need a Claude account (claude.ai) and your Google account, {google}.
 5. Make a project. In the menu on the left, press Projects, then New project. Call it Invoicing and press Create.
 6. Add the rules. In the project, next to Files, press +, then GitHub. Paste this link:
    {repo}
-   Leave every folder ticked and press Add.
+   Untick everything, tick only the folder called workspace, and press Add.
 7. Add your instruction. In the project, press Instructions (it may say "Set project instructions"). Paste everything
    between the two lines below, exactly as it is, and press Save.
    ----------

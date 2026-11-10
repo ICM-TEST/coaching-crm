@@ -12,9 +12,10 @@ files Google Docs, reached through the Google connectors: [connectors.md](connec
 4. Each coach keeps track of their lessons **their own way**. At the run, they invoice for work actually done.
    No one approves invoices. What's billable (no-shows, late cancellations) is each coach's own policy.
    **Once issued, an invoice is due** until it's paid or written off. While it's unpaid, the coach can update it through the generator.
-5. **A coach's run produces exactly two outputs:** the run's **invoice list** (which the head coach's recon reads)
-   and the **PDF invoices** (which the coach sends to clients). Nothing else. Both are made only by the invoice
-   generator inside the coach's Claude Project; it seals them, and the recon ignores and reports anything else.
+5. **A coach's run produces exactly two outputs:** the run's **invoice list** (a Sheet on the drive, which the head
+   coach's recon reads) and the **PDF invoices** (handed to the coach in the chat, which the coach sends to clients and
+   keeps; the drive doesn't store them). Nothing else. Both are made only by the invoice generator inside the coach's
+   Claude Project; it seals the list, and the recon ignores and reports anything else.
 6. Every invoice pays into **the business bank account** (from `factory/`, never typed by a coach).
 7. **The head coach does two recons, and only two:**
    - **Bank recon:** the bank statements (CSV or PDF) against the coaches' invoice lists. The month-end one waits until every coach's

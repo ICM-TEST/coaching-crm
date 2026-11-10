@@ -1,7 +1,7 @@
 # Skill — assign or move a client
 
 ## Inputs
-- `hub/clients`, `hub/coaches`
+- `hub/clients`, `hub/coaches`, `hub/start` (the scripts keep its counts right)
 
 ## Process
 1. Find the client. If more than one row fits the name, list them and ask.

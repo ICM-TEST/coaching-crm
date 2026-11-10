@@ -15,7 +15,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 from crm.books import audit_coach_folder, invoice_lists  # noqa: E402
 from crm.common import frontmatter, read_sheet, read_table  # noqa: E402
@@ -123,15 +123,16 @@ class Issue(unittest.TestCase):
         lists = invoice_lists(self.root / "coach-riley")
         self.assertEqual([m["problem"] for m, _ in lists], [""])                       # sealed by the generator
         self.assertEqual(audit_coach_folder(self.root / "coach-riley", lists, {}), [])      # nothing out of place
-        # connector mode: what to download first, and what to upload after, PDFs before the list
+        # connector mode: what to download first; after, the PDFs go to the coach and only the list to the drive
         needs = subprocess.run([sys.executable, "scripts/issue.py", "--coach-dir", "coach-riley", "--needs"], cwd=REPO,
                                capture_output=True, text=True, check=True).stdout
         for path in ("coach-riley/riley.me", "coach-riley/clients", "coach-riley/invoice-lists/*",
                      "factory/business", "factory/billable-work", "factory/invoice-template/fonts/*.ttf"):
             self.assertIn(path, needs)
-        up = issued_output.split("Upload, in this order")[1]
+        self.assertNotIn("invoices/<month>", needs)                                     # no month folder on the drive
+        up = issued_output.split("Hand these PDFs to the coach in the chat")[1]
         self.assertLess(up.index("Invoice 2026-07-491.pdf"), up.index("coach-riley/invoice-lists/2026-10"))
-        self.assertIn("— LAST", up)
+        self.assertNotIn("coach-riley/invoices/", up)
         out = self.issue(self.DRAFTS, ok=(1,))
         self.assertIn("already issued", out)                                            # one run, one list
 

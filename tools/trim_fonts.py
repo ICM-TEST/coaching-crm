@@ -12,7 +12,7 @@ from pathlib import Path
 
 from fontTools import subset
 
-OUT = Path(__file__).resolve().parent.parent / "workspace" / "_templates" / "drive" / "factory" / "invoice-template" / "fonts"
+OUT = Path(__file__).resolve().parent.parent / "_templates" / "drive" / "factory" / "invoice-template" / "fonts"
 UNICODES = "U+0020-007E,U+00A0-00FF,U+2013-2014,U+2018-201D,U+2022,U+2026,U+20AC"
 
 for weight in ("Regular", "Medium", "SemiBold", "Bold"):

@@ -9,9 +9,11 @@ the scripts filter by coach, and you don't.
 
 ## On every start
 
-Read `hub/coaches`, `hub/clients` and `factory/client-form`. Say first, in one line each, only what applies:
-- Setup isn't finished: no coach but the head coach, no `link:` in `factory/client-form`, or no clients in
-  `hub/clients`. Name the next step from first-run setup's *Finish* ([../../setup/SKILL.md](../../setup/SKILL.md)), and
+Read two Docs, and nothing else: `hub/<slug>.me` (who you work for) and `hub/start` (generated: `coaches`, `clients`,
+`unallocated`, `client_form_link`, `release`). Open `hub/coaches`, `hub/clients` or anything else only when the task needs
+it. Only if there's no `hub/start`, read `hub/coaches`, `hub/clients` and `factory/client-form` instead. Say first, in one
+line each, only what applies:
+- Setup isn't finished: `coaches` is 1 or less, `client_form_link` is blank, or `clients` is 0. Name the next step from first-run setup's *Finish* ([../../setup/SKILL.md](../../setup/SKILL.md)), and
   offer to start it.
 - Clients waiting for a coach: *"<n> clients are unallocated and need a coach."* Offer to assign them.
 
@@ -35,7 +37,7 @@ Recon needs only their `invoice-lists/`, and the scripts read those.
 | "run recon" (bank statement) | [skills/recon.md](skills/recon.md) → Recon 1 | the bank proposal |
 | a POP arrives / "do the POP recon" | [skills/recon.md](skills/recon.md) → Recon 2 | the POP proposal |
 | "push" (after deciding a proposal) | [skills/recon.md](skills/recon.md) → Push | — |
-| "version <x> is out" (from Ross) | set `version:` in `factory/release` through the Docs connector | — |
+| "version <x> is out" (from Ross) | through the Docs connector, set `version:` in `factory/release` and `release:` in `hub/start`. Coaches' `.me` Docs pick it up at the next recon | — |
 | "what's unreconciled?" | read `hub/unreconciled` | — |
 | "write off <invoice>" | [skills/recon.md](skills/recon.md) → Write-offs | confirm the amount before recording |
 | "what's outstanding?" / "who hasn't paid?" | read `hub/summary`: unpaid invoices across every coach, longest unpaid first | — |
@@ -55,6 +57,6 @@ Every job is read → run → write ([../../shared/connectors.md](../../shared/c
 | `scripts/clients.py details\|import` | the details kept about each client, and bringing in an existing list |
 | `scripts/build_lists.py coach-clients` | list of coaches + list of clients → each coach's `<slug>.me` and `clients` |
 | `scripts/runs.py status` | who's done a month |
-| `scripts/recon.py bank\|pops\|push` | the two recons |
+| `scripts/recon.py lists-needed\|bank\|pops\|push` | the two recons, and which invoice lists a recon must download |
 | `scripts/recon.py write-off` | record a write-off the head coach agreed with a coach (not a recon) |
 

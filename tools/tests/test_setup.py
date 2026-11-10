@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 
 
 class Setup(unittest.TestCase):

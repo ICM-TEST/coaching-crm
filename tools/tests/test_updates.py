@@ -15,7 +15,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 from crm.books import invoice_lists  # noqa: E402
 from crm.common import read_sections, read_table  # noqa: E402
@@ -170,7 +170,7 @@ class Updates(unittest.TestCase):
         p = subprocess.run([sys.executable, "-B", "scripts/sync.py", "plan", str(self.w), "--role", "coach", "--coach", "coach-riley",
                             "--json"], cwd=REPO, capture_output=True, text=True)
         self.assertEqual(p.returncode, 0, p.stdout)
-        self.assertEqual([o["op"] for o in json.loads(p.stdout)], ["upload", "create_sheet", "lock", "lock"])
+        self.assertEqual([o["op"] for o in json.loads(p.stdout)], ["hand_over", "create_sheet", "lock"])
 
     def test_needs_the_unpaid_list(self):
         (self.w / "coach-riley/unpaid.csv").unlink()

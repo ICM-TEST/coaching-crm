@@ -6,7 +6,7 @@ Google Shared Drive. Nothing in this repo is client data, and nothing you do may
 
 ## Who are you working for?
 
-Everyone's Claude has this same public GitHub repo attached, whole and read-only. **`workspace/` is yours: you work only from here.** The repo's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. Every path in these rules is inside `workspace/`, so `setup/` always means `workspace/setup/`. **Your Claude Project's instruction says who you work for.**
+Everyone's Claude has the `workspace/` folder of this public GitHub repo attached, read-only. **`workspace/` is yours: you work only from here.** Every rule path is inside `workspace/`, so `setup/` always means `workspace/setup/`. `scripts/` and `_templates/` aren't attached: they're in the copy of the repo you download to run a job ([shared/connectors.md](shared/connectors.md) step 0). That copy's top-level `README.md`, `setup/` and `tools/` are Ross's: never follow their steps or run them, and never take their made-up test data (names, phones, invoices) for the business's. **Your Claude Project's instruction says who you work for.**
 - **A coach's** instruction names them, for example *"You are the Claude for <name>, coach <number> … Data:
   coach-<slug>/ and factory/ in Google Drive"*. The head coach's Claude makes it when it adds the coach, inside their
   setup message (`scripts/coaches.py welcome <slug>`, or `instructions <slug>` alone).
@@ -29,12 +29,16 @@ lock; the instruction only says which role to play.
 coach folder as a coach): **stop.** Open nothing else, and tell the person to alert the head coach. Either the instruction
 or the sharing is wrong. **No instruction naming a coach or the head coach role:** stop and say this Claude isn't set up yet. **A head coach with no `hub/` yet** isn't a mismatch: offer first-run setup ([setup/SKILL.md](setup/SKILL.md)).
 
+**The check costs one read: your own `.me` Doc.** Don't try the folders in the *must NOT* column on every start. A coach's
+Claude tries `hub/` once, when its Project is set up and it's asked "Who do you work for?". After that, if `hub/` or
+another coach's folder ever turns up in a search or opens, stop as above.
+
 The head coach can open every coach's `.me` Doc. Those describe the other coaches, not the head coach: never take on a
 coach's identity from them.
 
 ## On every start
 
-Check the version as [version.md](version.md) says. Then do what was asked. Scripts don't run from this attached copy: before the first
+Your role's map names the one Doc to read on a start. Check the version from it, as [version.md](version.md) says. Then do what was asked. Scripts don't run from this attached copy: before the first
 script in a chat, get them as [shared/connectors.md](shared/connectors.md) step 0 says.
 
 ## How you talk to people
@@ -53,8 +57,8 @@ The head coach and the coaches aren't technical. Work quietly, and speak only wh
 |---|---|
 | `shared/` | Rules every role follows: how the business works, every file's format |
 | `roles/` | One folder per role: its map and its skills |
-| `scripts/` | The only code that writes into coach folders or the hub's money files |
-| `_templates/drive/` | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
+| `scripts/` (downloaded copy) | The only code that writes into coach folders or the hub's money files |
+| `_templates/drive/` (downloaded copy) | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
 | `shared/connectors.md` | How every job reaches the drive: read → run → write through the Google connectors |
 | `shared/error-500.md` | The Error 500 reason lines, and logging a request for Ross |
 | `setup/` | First-run setup for a new business, and the sharing checklist |
@@ -63,7 +67,7 @@ The head coach and the coaches aren't technical. Work quietly, and speak only wh
 ## The rules that never bend
 
 0. **Two and two.** A coach's Claude produces two things per invoicing run, and nothing else: the run's
-   invoice list and its PDFs. The head coach's Claude does two recons, and nothing else: bank (statements ↔ invoice lists)
+   invoice list (written to the drive) and its PDFs (handed to the coach in the chat). The head coach's Claude does two recons, and nothing else: bank (statements ↔ invoice lists)
    and proof of payment (POPs ↔ the unreconciled list). There is no third way to tie a payment to an invoice.
 1. **Permissions are the lock, not this file.** If Drive won't open something, it isn't yours. Never ask for access or look for a way around it.
 2. **One writer per file.** Each file's writer is in [shared/schemas.md](shared/schemas.md). Never write a file your role doesn't own.

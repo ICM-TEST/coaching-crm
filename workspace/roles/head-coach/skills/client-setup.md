@@ -55,7 +55,8 @@ responses Sheet only. Read the questions back. **STOP** for a yes.
 2. Press the link symbol, tick Shorten URL, and press Copy.
 3. Paste the link here.
 
-Then write it into `factory/client-form` (`link: <the link>`) through the Docs connector, re-read it, and tell the head
+Then write it into `factory/client-form` (`link: <the link>`) and into `hub/start` (`client_form_link: <the link>`) through
+the Docs connector, and tell the head
 coach: "This is the link for new clients. You and every coach can hand it out; coaches find it in factory/client-form.
 When answers come in, say 'check intake'."
 

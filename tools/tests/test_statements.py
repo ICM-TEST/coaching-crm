@@ -15,7 +15,7 @@ import unittest
 from decimal import Decimal
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 from crm.common import money, read_table  # noqa: E402
 from recon import balance_break  # noqa: E402

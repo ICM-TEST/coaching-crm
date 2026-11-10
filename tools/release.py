@@ -20,9 +20,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 VERSION = REPO / "workspace/version.md"
-TEMPLATE = REPO / "workspace/_templates/drive/factory/release.txt"
+TEMPLATE = REPO / "_templates/drive/factory/release.txt"
 TESTS = ["test_cycle", "test_coaches", "test_issue", "test_sync", "test_updates", "test_setup", "test_release",
-         "test_statements", "test_clients"]
+         "test_statements", "test_clients", "test_usage"]
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 TOKEN = re.compile(r"\b(gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9-]{20,}|AKIA[0-9A-Z]{16})\b")
 

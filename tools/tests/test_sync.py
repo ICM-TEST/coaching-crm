@@ -12,7 +12,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 
 
 def run(script, *args, ok=(0,)):
@@ -58,12 +58,10 @@ class Sync(unittest.TestCase):
             "--drafts", str(drafts))
         ops = self.ops("--role", "coach", "--coach", "coach-riley")
         self.assertEqual([(o["op"], o["path"]) for o in ops],
-                         [("create_folder", "coach-riley/invoices/2026-10"),             # its own month folder
-                          ("upload", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),
-                          ("create_sheet", "coach-riley/invoice-lists/2026-10"),          # the list after its PDF
-                          ("lock", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),
+                         [("hand_over", "coach-riley/invoices/2026-10/Invoice 2026-01-490.pdf"),   # to the coach, in the chat
+                          ("create_sheet", "coach-riley/invoice-lists/2026-10"),          # the only thing written to the drive
                           ("lock", "coach-riley/invoice-lists/2026-10")])
-        sheet = ops[2]["values"]
+        sheet = ops[1]["values"]
         self.assertIn(["'made_by:", "'issue.py"], sheet)                                  # the seal block travels
         self.assertTrue(any(r[:1] == ["'seal:"] and r[1].startswith("'seal-") for r in sheet))
         self.assertIn("Carry these out in this order", self.plan("--role", "coach", "--coach", "coach-riley"))
@@ -88,9 +86,9 @@ class Sync(unittest.TestCase):
         c.write_text(c.read_text() + "C0099,Someone,,,active,2026-10-01\n")               # a generated Sheet
         (self.work / "coach-riley/invoice-lists/README.txt").unlink()                     # a deletion
         out = self.plan("--role", "coach", "--coach", "coach-riley", ok=(1,))
-        for expected in ("coach-riley/invoices/extra: a coach's Claude may only make its month folder",
-                         "coach-riley/invoices/extra/x.pdf: a coach's Claude may only make its month folder",
-                         "coach-riley/clients: a coach's Claude may only",
+        for expected in ("coach-riley/invoices/extra: a coach's Claude writes only its invoice-list Sheets",
+                         "coach-riley/invoices/extra/x.pdf: a coach's Claude writes only its invoice-list Sheets",
+                         "coach-riley/clients: a coach's Claude writes only",
                          "coach-riley/invoice-lists/README.txt: deleted"):
             self.assertIn(expected, out)
         self.assertIn("don't write anything to the drive", out)

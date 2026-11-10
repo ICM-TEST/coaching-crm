@@ -2,7 +2,7 @@
 
 ## Inputs
 - `hub/client-form responses`: the Form's response Sheet ([client-setup.md](client-setup.md), part 2)
-- `hub/clients`, `hub/coaches`
+- `hub/clients`, `hub/coaches`, `hub/start` (the scripts keep its counts right)
 - The latest `hub/intake/…` Sheet (for its `last_row:` value, so rows aren't read twice)
 
 ## Process

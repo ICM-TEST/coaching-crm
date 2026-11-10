@@ -34,7 +34,7 @@ Read everything back in one message. Wait for a yes. Nothing is written to the d
 Follow [../shared/connectors.md](../shared/connectors.md).
 
 1. Get the scripts (step 0 there). Make an empty `work/`, then `python3 scripts/sync.py snapshot <work>`.
-2. Copy `_templates/drive/` into `work/`, leaving out `coach-template/` and `factory/invoice-template/fonts/`: the fonts
+2. Copy `_templates/drive/` (in the downloaded repo) into `work/`, leaving out `coach-template/` and `factory/invoice-template/fonts/`: the fonts
    come with the scripts, and uploading them through a connector is wasteful.
 3. Fill in `factory/business.txt` and `factory/billable-work.csv`, replacing every `<placeholder>` (a skipped one becomes
    blank), and write `hub/<slug>.me.txt`, which becomes the Doc `<slug>.me`

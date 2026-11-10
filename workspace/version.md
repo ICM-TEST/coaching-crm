@@ -9,12 +9,13 @@ The version of the rules this snapshot holds. Written only by Ross's `tools/rele
 
 ## The version check
 
-The `factory/release` Doc holds the latest version Ross has released. If its `version:` is newer than this file's, this
-snapshot is behind. Say so once, in one line, the next time you speak to the person:
+The `release:` line in the Doc you read on a start (a coach's `<slug>.me`, the head coach's `hub/start`) is the latest
+version Ross has released, copied from `factory/release`. If it's newer than this file's `version:`, this snapshot is
+behind. Don't open `factory/release` to check. Say so once, in one line, the next time you speak to the person:
 
 > System update ready. Next time you're at a computer: claude.ai → your project → settings → Sync.
 
-Then carry on normally. Never refuse work because the snapshot is behind. If `factory/release` is missing, say nothing.
+Then carry on normally. Never refuse work because the snapshot is behind. If there's no `release:` line, or it's blank, say nothing.
 
 ## What changed
 

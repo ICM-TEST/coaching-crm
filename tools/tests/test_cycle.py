@@ -14,7 +14,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent.parent / "workspace"
+REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 from crm.books import GENERATOR, file_hash, list_seal  # noqa: E402
 from crm.common import append_rows, read_sheet, read_table, rewrite_table, write_sheet  # noqa: E402

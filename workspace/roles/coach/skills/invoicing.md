@@ -29,8 +29,8 @@ The coach corrects or approves the drafts.
 
 ## Issue — "issue them"
 `python3 scripts/issue.py --root <drive> --coach-dir coach-<slug> --period 2026-10 --drafts drafts.json`
-- It makes every PDF in `invoices/<period>/` (`Invoice 2026-03-490.pdf`, …), **then** writes `invoice-lists/<month>`.
-  Those are this coach's two outputs, and nothing else is written.
+- It makes every PDF (`Invoice 2026-03-490.pdf`, …), **then** `invoice-lists/<month>`. Those are this coach's two
+  outputs. Only the list is written to the drive; the PDFs are handed to the coach in the chat.
 - Every invoice is the business's own layout ([factory/invoice-rules](../../../factory/invoice-rules) in the drive);
   only this coach's phone and email (from their `.me` Doc) are theirs.
 - The list existing is what tells the head coach this coach's run is done. **Nothing to bill?** Issue with
@@ -42,17 +42,16 @@ The coach corrects or approves the drafts.
 Follow [../../../shared/connectors.md](../../../shared/connectors.md): read → run → write.
 
 1. **Read.** `python3 scripts/issue.py --coach-dir coach-<slug> --needs` lists what to download into `work/`: this
-   coach's `<slug>.me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc, the price list,
-   the fonts (copied from the downloaded repo), and the month's PDF folder (if it's on the drive, make the same empty folder in `work/` before the snapshot; if not,
-   the generator makes it and the plan creates it).
-   Then `python3 scripts/sync.py snapshot work`.
+   coach's `<slug>.me` Doc and `clients` Sheet, their `invoice-lists` Sheets, the business Doc and the price list. The
+   fonts are copied from the downloaded repo. Then `python3 scripts/sync.py snapshot work`.
 2. **Draft, dry run, issue** as above, with `--root work`.
-3. **Write.** `python3 scripts/sync.py plan work --role coach --coach coach-<slug>`. It lists: upload each PDF, create
-   the invoice-list Sheet (**after** the PDFs), lock them all. Carry it out in that order, then list both folders on the
-   drive to check every file is there.
-   - The month's PDF folder is the **only** folder you ever make, and only through the plan. **Never rename, move or
-     delete anything on the drive.**
+3. **Write.** `python3 scripts/sync.py plan work --role coach --coach coach-<slug>`. It lists: hand each PDF to the
+   coach, create the invoice-list Sheet, lock it. Give the coach the PDFs in the chat as files to download (one zip if
+   there are more than five). **Never upload a PDF through a connector.** Then create and lock the list, and list
+   `invoice-lists/` once to check it's there.
+   - **Never make a folder, and never rename, move or delete anything on the drive.**
    - If the plan says **Refused**, write nothing and tell the coach why.
+   - Tell the coach in one line: the PDFs are theirs to send, and to keep; the system doesn't store them.
 
 ## Corrections
 Never edit an issued list or PDF, and never make or change a PDF by hand: the head coach's recon would still use the old
@@ -63,7 +62,7 @@ period. Give the lines the invoice should now have:
 `{"updates": [{"invoice": "2026-03-490", "lines": [{"code": "PVT", "month": "2026-10", "qty": 2}]}]}`
 For a whole invoice cancelled: `{"invoice": "2026-03-490", "cancel": true, "lines": []}`. Do the dry run and stop for the coach,
 as for any invoice. It keeps its number and date, so the client pays with the same reference. The generator makes
-`Invoice 2026-03-490 (updated).pdf` and a new sealed list. Upload them the same way; the plan lists the steps. The coach
-sends the new PDF. The original stays in the folder, and the head coach's summary shows the change.
+`Invoice 2026-03-490 (updated).pdf` and a new sealed list. Hand over the PDF and write the list the same way; the plan
+lists the steps. The coach sends the new PDF, and the head coach's summary shows the change.
 
 **The client has already paid:** the generator refuses. Nothing changes here. The coach adjusts that client's future invoices.

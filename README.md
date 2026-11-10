@@ -12,18 +12,20 @@ account. This repo holds the **structure**. Each business's **data** lives in it
 
 | Root | Where | Who reads it | Who changes it |
 |---|---|---|---|
-| **Structure** | This whole repo, public, attached to each person's Claude Project as knowledge | Each person's Claude, and anyone else, so it never holds client data | Only Ross |
+| **Structure** | This repo, public. Its `workspace/` folder is attached to each person's Claude Project as knowledge; jobs download the rest | Each person's Claude, and anyone else, so it never holds client data | Only Ross |
 | **Data** | The business's Google Shared Drive, shared folder by folder | Each person's Claude, limited by Drive sharing | Each role, through the scripts |
 
 ## Layout
 
 | Folder | What | Who uses it |
 |---|---|---|
-| `workspace/` | Rules, skills, scripts and Drive templates. Agents start at [workspace/CLAUDE.md](workspace/CLAUDE.md) | Everyone's Claude |
+| `workspace/` | Rules and skills, markdown only. **The only folder attached to a Project.** Agents start at [workspace/CLAUDE.md](workspace/CLAUDE.md) | Everyone's Claude |
+| `scripts/` | The code every job runs, downloaded by each job | Everyone's Claude, in its sandbox |
+| `_templates/` | The empty Drive folders and the invoice fonts | Setup and the invoice generator |
 | `setup/` | Ross's onboarding and questionnaire | Ross only |
 | `tools/` | Ross's tests, release and font tools | Ross only |
 
-All three are attached to every Project. Agents work only from `workspace/`.
+Only `workspace/` is attached to a Project. Attaching the rest adds about 230 KB of code and tests to every chat for nothing.
 
 ## Changing the live system
 
@@ -34,7 +36,7 @@ All three are attached to every Project. Agents work only from `workspace/`.
 
 ## Tests
 
-`python3 tools/tests/test_cycle.py` and `test_coaches.py` need only Python 3.10+. `test_setup.py`, `test_release.py`, `test_statements.py` and `test_clients.py` too. `test_issue.py`, `test_sync.py` and `test_updates.py` also need reportlab.
+`python3 tools/tests/test_cycle.py` and `test_coaches.py` need only Python 3.10+. `test_setup.py`, `test_release.py`, `test_statements.py`, `test_clients.py` and `test_usage.py` too. `test_issue.py`, `test_sync.py` and `test_updates.py` also need reportlab.
 
 ## Status
 
