@@ -125,5 +125,49 @@ class Sync(unittest.TestCase):
         self.assertFalse([o for o in ops if o["path"].startswith("coach-riley/invoice")], "Morgan never writes a coach's invoices")
 
 
+    # --- the lock, from the audit of 2026-11-10: every one of these must be refused ---
+
+    def refused(self, role, *paths):
+        out = self.plan(*role, ok=(1,))
+        for path in paths:
+            self.assertIn(path + ":", out)
+
+    def test_head_coach_cannot_rewrite_the_money_records(self):
+        for name in ("allocations", "eft-ledger", "eft-reviews", "all-invoices", "client-history"):
+            f = self.work / f"hub/{name}.csv"
+            f.write_text(f.read_text() + "x,y\n")
+        run("sync.py", "snapshot", str(self.work))
+        for name in ("allocations", "eft-ledger", "eft-reviews", "all-invoices", "client-history"):
+            f = self.work / f"hub/{name}.csv"
+            f.write_text(f.read_text().replace("x,y\n", "changed,y\n"))
+        self.refused(("--role", "head-coach"), "hub/allocations", "hub/eft-ledger", "hub/eft-reviews", "hub/all-invoices",
+                     "hub/client-history")
+
+    def test_head_coach_may_still_add_to_them(self):
+        run("sync.py", "snapshot", str(self.work))
+        f = self.work / "hub/client-history.csv"
+        f.write_text(f.read_text() + "2026-11-01,C0001,coach riley,moved\n")
+        self.assertEqual([o["op"] for o in self.ops("--role", "head-coach")], ["append"])
+
+    def test_head_coach_cannot_invent_a_top_level_folder(self):
+        run("sync.py", "snapshot", str(self.work))
+        (self.work / "movies").mkdir()
+        (self.work / "movies/list.txt").write_text("x")
+        self.refused(("--role", "head-coach"), "movies", "movies/list")
+
+    def test_head_coach_cannot_hide_a_file_in_a_coach_folder_by_its_name(self):
+        run("sync.py", "snapshot", str(self.work))
+        (self.work / "coach-riley/invoice-lists/clients.csv").write_text("period:,2026-10\n")
+        (self.work / "coach-riley/pops/unpaid.csv").write_text("x\n")
+        self.refused(("--role", "head-coach"), "coach-riley/invoice-lists/clients", "coach-riley/pops/unpaid")
+
+    def test_a_coach_can_only_create_real_invoice_lists(self):
+        run("sync.py", "snapshot", str(self.work))
+        (self.work / "coach-riley/invoice-lists/shopping.csv").write_text("milk\n")
+        (self.work / "coach-riley/invoice-lists/2026-10.csv").write_text("milk\n")          # right name, not a list
+        self.refused(("--role", "coach", "--coach", "coach-riley"), "coach-riley/invoice-lists/shopping",
+                     "coach-riley/invoice-lists/2026-10")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

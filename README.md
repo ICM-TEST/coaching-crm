@@ -30,7 +30,8 @@ Only `workspace/` is attached to a Project. Attaching the rest adds about 230 KB
 ## Changing the live system
 
 1. Edit, commit.
-2. `python3 tools/release.py --note "what changed"` runs the tests, scans for personal data, bumps the version, commits and pushes.
+2. `python3 tools/release.py --note "what changed"` scans for personal data, runs the tests, bumps the version, commits,
+   tags `vX.Y.Z` and pushes. Jobs download their scripts from that tag, so rules and code never drift apart.
 3. Tell the head coach's Claude "version <x> is out". Each person's Claude then says an update is ready until they press
    Sync, which is desktop only. Until then they run the previous version.
 

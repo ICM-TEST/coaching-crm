@@ -6,19 +6,23 @@ phone included. The scripts can't use connectors, so every job is the same three
 
 ## 0. Get the scripts
 
-The repo attached to your Project can be read but not run: its files never reach your code sandbox. So before the first script
-in a chat, copy the public repo into the sandbox with git:
+The rules attached to your Project can be read but not run, and the scripts aren't attached at all. So before the
+first script in a chat, copy the public repo into the sandbox with git, **at the version your rules are**: `<version>`
+is the `version:` in [../version.md](../version.md), so the code you run always matches the rules you hold.
 
 ```
-git clone --depth 1 https://github.com/ICM-TEST/coaching-crm.git coaching-crm-main
+git clone --depth 1 --branch v<version> https://github.com/ICM-TEST/coaching-crm.git coaching-crm-main
 ```
 
 Only if the sandbox has no `git` command, use the download link instead. It redirects to `codeload.github.com`, which
 some sandboxes block:
 
 ```
-curl -sSL https://github.com/ICM-TEST/coaching-crm/archive/refs/heads/main.tar.gz | tar xz
+curl -sSL https://github.com/ICM-TEST/coaching-crm/archive/refs/tags/v<version>.tar.gz | tar xz
 ```
+
+(that unpacks as `coaching-crm-<version>`: rename it `coaching-crm-main`). Never download `main` or any other branch or
+version: a newer one may not match your rules.
 
 Run every `python3 scripts/…` from `coaching-crm-main`, with `--root` and `work` as the full path of your `work/`.
 If the folder is already there, use it. **These are the only two ways. If they fail, stop and tell the person the exact

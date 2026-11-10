@@ -4,9 +4,10 @@
     python3 tools/release.py --note "what changed" [--bump minor] [--dry-run]
     python3 tools/release.py --scan-only
 
-In order, stopping at the first failure: clean tree, all tests, personal-data scan, version bump, commit, push.
-The repo is public, so the scan must pass. Its deny list holds real names and lives outside the repo:
---denylist, or $CRM_DENYLIST, one phrase per line.
+In order, stopping at the first failure: personal-data scan, clean tree, all tests, version bump, commit, tag
+vX.Y.Z, push the branch and the tag. The same order in every client repo (Ross's push checklist). The repo is public,
+so the scan must pass: tools/scan.py says where its deny list lives. The tag is what each job downloads its scripts
+from (workspace/shared/connectors.md step 0), so the rules a Project holds and the code it runs are always one version.
 """
 from __future__ import annotations
 
@@ -23,53 +24,12 @@ VERSION = REPO / "workspace/version.md"
 TEMPLATE = REPO / "_templates/drive/factory/release.txt"
 TESTS = ["test_cycle", "test_coaches", "test_issue", "test_sync", "test_updates", "test_setup", "test_release",
          "test_statements", "test_clients", "test_usage"]
-EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-TOKEN = re.compile(r"\b(gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9-]{20,}|AKIA[0-9A-Z]{16})\b")
-
-
-class Refused(Exception):
-    pass
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from scan import Refused, load_denylist, scan, scan_text  # noqa: E402,F401  (the same scan in every client repo)
 
 
 def git(*args: str) -> str:
     return subprocess.run(["git", *args], cwd=REPO, capture_output=True, text=True, check=True).stdout
-
-
-def scan_text(name: str, text: str, deny: list[str]) -> list[str]:
-    """Personal data or secrets in one file's text."""
-    out = []
-    for i, line in enumerate(text.splitlines(), 1):
-        for phrase in deny:
-            if re.search(rf"(?<![A-Za-z0-9]){re.escape(phrase)}(?![A-Za-z0-9])", line, re.I):
-                out.append(f"{name}:{i}: a phrase from the deny list")
-        for mail in EMAIL.findall(line):
-            if not re.search(r"(example\.|noreply@)", mail):
-                out.append(f"{name}:{i}: an email address")
-        if TOKEN.search(line):
-            out.append(f"{name}:{i}: what looks like a secret")
-    return out
-
-
-def load_denylist(path: str | None) -> list[str]:
-    path = path or os.environ.get("CRM_DENYLIST") or str(REPO.parent.parent / "notes/public-repo-denylist.txt")
-    if not Path(path).exists():
-        raise Refused(f"No deny list at {path}. Give one with --denylist.")
-    return [l.strip() for l in Path(path).read_text().splitlines() if l.strip() and not l.startswith("#")]
-
-
-def scan(deny: list[str]) -> list[str]:
-    git("add", "-A", "-n")
-    names = {*git("ls-files").splitlines(), *git("ls-files", "--others", "--exclude-standard").splitlines()}
-    problems = []
-    for name in sorted(names):
-        p = REPO / name
-        if p.name == "release.py" or not p.is_file():
-            continue
-        try:
-            problems += scan_text(name, p.read_text(encoding="utf-8"), deny)
-        except UnicodeDecodeError:
-            continue
-    return problems
 
 
 def bump(version: str, part: str) -> str:
@@ -115,8 +75,9 @@ def main() -> None:
         VERSION.write_text(bumped_version_file(text, new, dt.date.today().isoformat(), a.note))
         TEMPLATE.write_text(re.sub(r"^version: .*$", f"version: {new}", TEMPLATE.read_text(), count=1, flags=re.M))
         git("add", str(VERSION), str(TEMPLATE))
-        git("commit", "-m", f"Release v{new}: {a.note}\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>")
-        git("push")
+        git("commit", "-m", f"Release v{new}: {a.note}")
+        git("tag", "-a", f"v{new}", "-m", f"Release v{new}: {a.note}")
+        git("push", "origin", "HEAD", f"v{new}")
         print(f"Released {new}. Now tell the head coach's Claude: \"version {new} is out\".")
     except Refused as e:
         print(f"Refused: {e}")

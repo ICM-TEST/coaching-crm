@@ -20,4 +20,6 @@ The head coach says "set up my workspace" ([../workspace/setup/SKILL.md](../work
 Don't add anyone as a collaborator or organisation member. Not being one is the lock.
 
 ## 3. Before every push
-`tools/release.py` scans for personal data. Its deny list is kept outside the repo, because the list itself names real people.
+`tools/release.py` scans for personal data (`tools/scan.py`, the same file in every client repo). Its deny list is kept
+outside the repo, in Ross's workspace at `_system/reference/public-repo-denylist.txt`, because the list itself names real
+people. Every release is tagged `vX.Y.Z`, and jobs download their scripts from that tag.

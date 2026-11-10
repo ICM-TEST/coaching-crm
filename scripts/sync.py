@@ -24,6 +24,8 @@ from pathlib import Path
 
 BEFORE = ".before"
 SKIP = {BEFORE, ".drive-index.csv"}
+HEAD_TOPS = {"hub", "factory", "_archive"}                    # with coach-<slug>/, everything the drive holds
+APPEND_ONLY = {"hub/allocations", "hub/eft-ledger", "hub/eft-reviews", "hub/all-invoices", "hub/client-history"}
 
 
 def _files(work: Path) -> tuple[set[str], set[str]]:
@@ -142,17 +144,25 @@ def plan(work: Path, role: str, coach: str) -> tuple[list[dict], list[str]]:
             continue
         p = o["path"]
         if role == "coach":
-            ok = o["op"] == "create_sheet" and re.fullmatch(rf"{re.escape(coach)}/invoice-lists/[^/]+", p)
+            ok = o["op"] == "create_sheet" and re.fullmatch(rf"{re.escape(coach)}/invoice-lists/\d{{4}}-\d{{2}}(-\d+)?", p) \
+                and any(r and r[0].lstrip("'").strip() == "period:" for r in o["values"])
             if not ok:
                 problems.append(f"{p}: a coach's Claude writes only its invoice-list Sheets to the drive, and hands its "
                                 f"PDFs to the coach (not '{o['op']}')")
         elif role == "head-coach":
             top = p.split("/", 1)[0]
-            if top.startswith("coach-") and not (o["op"] == "create_folder" or p == f"{top}/{top.removeprefix('coach-')}.me" or p.endswith(("/clients", "/unpaid"))
-                                                 or (o["op"] == "create_doc" and p.endswith("README"))
-                                                 or (o["op"] in ("create_sheet",) and p.endswith(("/clients", "/unpaid")))):
-                problems.append(f"{p}: the head coach's Claude doesn't write a coach's invoices, lists or POPs "
-                                f"(not '{o['op']}')")
+            slug = top.removeprefix("coach-")
+            if top.startswith("coach-"):
+                own = {f"{top}/{slug}.me", f"{top}/clients", f"{top}/unpaid"}       # the three files the scripts rebuild
+                setup = (o["op"] == "create_folder" and p in (top, f"{top}/invoice-lists", f"{top}/invoices", f"{top}/pops")) \
+                    or (o["op"] == "create_doc" and p in (f"{top}/invoice-lists/README", f"{top}/pops/README"))
+                if not (p in own or setup):
+                    problems.append(f"{p}: the head coach's Claude doesn't write a coach's invoices, lists or POPs "
+                                    f"(not '{o['op']}')")
+            elif top not in HEAD_TOPS:
+                problems.append(f"{p}: the drive holds only {', '.join(sorted(HEAD_TOPS))} and the coach folders")
+            elif o["op"] == "rewrite" and p in APPEND_ONLY:
+                problems.append(f"{p}: this Sheet is only ever added to; a job that changes or removes its rows is refused")
     return ops, problems
 
 
