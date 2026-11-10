@@ -1,10 +1,11 @@
-# Error 500: reasons and requests
+# Error 500: reasons, and who to contact
 
 How `CLAUDE.md` rule 6 is answered. The Error 500 line is always exactly:
 
 `Error 500 - Sorry, this request cannot be carried out`
 
-It's followed by one reason line from the table below, then by the request offer (head coach) or the pointer (coach).
+It's followed by one reason line from the table below, then, for a change to the system, by one line saying who to
+contact.
 
 ## Reason lines
 
@@ -21,24 +22,22 @@ get around it. Pick the row that fits; fill the angle brackets.
 Allowed values are listed in [schemas.md](schemas.md), in the order written there, all of them, joined with commas and a
 final "or".
 
-**Not Error 500.** These belong to the head coach, through their skills: the business details, prices and invoice wording
-in `factory/`, coaches, clients, the head coach's own client details and the client form
-([../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md)). A coach's own records, drafts
-and corrections belong to the coach.
+**Not Error 500: these are the business's own, kept on its drive and changed by chat with nobody else involved.** The
+business details, bank details, prices, what's billed in advance, the invoice day and the invoice wording in `factory/`;
+coaches; clients; the head coach's own client details and the client form
+([../roles/head-coach/skills/client-setup.md](../roles/head-coach/skills/client-setup.md)). They belong to the head coach,
+through their skills. A coach's own drafts and corrections belong to the coach. Changing one of these is never a system
+change, and nobody is told to contact anyone.
 
 ## After the reason line
 
-- **Head coach:** ask "Want me to log a request to update the system?" On yes, ask in one message, numbered, in these
-  words, leaving out any the chat has already answered:
-  1. What should the system do?
-  2. Give me one real example: who, when, what happened.
-  3. How urgent is it, and what will you do until then?
+Only for a change to how the system works (the last three rows). For anything off the business (the first row), the
+reason line is the end.
 
-  Ask once. Anything not answered goes in as `(not said)`; never ask again. Then write the Doc
-  `hub/requests/YYYY-MM-DD-<slug>` through the Docs connector: `date:`, `from:` (the head coach's name), then each answer
-  word for word under its own heading. Tell them in one line that it's logged for Ross. Writing it changes nothing else.
-- **Coach:** don't offer a request: a coach's Claude writes nothing but invoices and invoice lists. Add one line: "If the
-  system should do this, tell <head coach's first name>."
+- **Head coach:** add one line, exactly: "To change how the system works, contact your system provider: <the `System
+  provider:` line of your Project instruction>." If the instruction has no such line, say "contact your system
+  provider" and stop there. Never offer to log, save, draft or send the request, and write nothing to the drive about it.
+- **Coach:** add one line: "If the system should do this, tell <head coach's first name>."
 
 ## Asked about Error 500
 

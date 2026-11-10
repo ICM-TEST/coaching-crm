@@ -32,7 +32,7 @@ Only `workspace/` is attached to a Project. Attaching the rest adds about 230 KB
 1. Edit, commit.
 2. `python3 tools/release.py --note "what changed"` scans for personal data, runs the tests, bumps the version, commits,
    tags `vX.Y.Z` and pushes. Jobs download their scripts from that tag, so rules and code never drift apart.
-3. Tell the head coach's Claude "version <x> is out". Each person's Claude then says an update is ready until they press
+3. Tell the head coach to say "version <x> is out" to their Claude. Each person's Claude then says an update is ready until they press
    Sync, which is desktop only. Until then they run the previous version.
 
 ## Tests

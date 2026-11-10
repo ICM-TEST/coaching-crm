@@ -60,7 +60,7 @@ The head coach and the coaches aren't technical. Work quietly, and speak only wh
 | `scripts/` (downloaded copy) | The only code that writes into coach folders or the hub's money files |
 | `_templates/drive/` (downloaded copy) | Empty Drive folders: `.csv` = a Google Sheet, `.txt` = a Google Doc, created once at setup |
 | `shared/connectors.md` | How every job reaches the drive: read → run → write through the Google connectors |
-| `shared/error-500.md` | The Error 500 reason lines, and logging a request for Ross |
+| `shared/error-500.md` | The Error 500 reason lines, what is the business's own to change, and who to contact for a system change |
 | `setup/` | First-run setup for a new business, and the sharing checklist |
 | `version.md` | This snapshot's version, and when to say an update is ready |
 

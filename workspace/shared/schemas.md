@@ -30,7 +30,6 @@ copy a Sheet is `<name>.csv` and a Doc `<name>.txt`; on the drive they have no e
 | `client-form responses` | the client form's answers, one column per question | Google Forms |
 | `client-history` | `date` · `client_id` · `change` · `reason` | head coach (append) |
 | `intake/YYYY-MM-DD` | intake proposal | head coach's Claude |
-| `requests/YYYY-MM-DD-<slug>` (Doc) | a request for Ross to change the system: `date:`, `from:`, then the head coach's answers word for word ([error-500.md](error-500.md)) | head coach's Claude |
 | `bank/` | the bank's statements, exactly as the bank gives them: CSV or PDF, never changed | head coach (uploads) |
 | `bank/lines/<statement file name>` | **the lines read from that statement**, one layout for every bank: `date` (YYYY-MM-DD) · `description` (as printed) · `amount` (a plain number: money in positive, money out negative) · `balance` (after the line, as printed, or blank if the statement has none). One row per transaction, in the statement's order | the head coach's Claude, once per statement |
 | `eft-ledger` | `eft_id` · `date` · `amount` · `description` · `source` | `recon.py` (append) |

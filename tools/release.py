@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
-"""release.py: ship a structure change. Ross only.
+"""release.py: ship a structure change. Ross only. The same file, byte for byte, in every client repo.
 
-    python3 tools/release.py --note "what changed" [--bump minor] [--dry-run]
+    python3 tools/release.py --note "what changed" [--bump patch|minor|major] [--dry-run]
     python3 tools/release.py --scan-only
 
-In order, stopping at the first failure: personal-data scan, clean tree, all tests, version bump, commit, tag
-vX.Y.Z, push the branch and the tag. The same order in every client repo (Ross's push checklist). The repo is public,
-so the scan must pass: tools/scan.py says where its deny list lives. The tag is what each job downloads its scripts
-from (workspace/shared/connectors.md step 0), so the rules a Project holds and the code it runs are always one version.
+In order, stopping at the first failure: personal-data scan, clean tree, every tools/tests/test_*.py, version bump in
+workspace/version.md, commit "Release vX.Y.Z: note", tag vX.Y.Z, push the branch and the tag. The repo is public, so
+the scan must pass: tools/scan.py says where its deny list lives. What happens after the push (how the client hears
+about it) is the one step that differs per repo: README.md § Changing the live system.
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
-import os
 import re
 import subprocess
 import sys
@@ -21,11 +20,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 VERSION = REPO / "workspace/version.md"
-TEMPLATE = REPO / "_templates/drive/factory/release.txt"
-TESTS = ["test_cycle", "test_coaches", "test_issue", "test_sync", "test_updates", "test_setup", "test_release",
-         "test_statements", "test_clients", "test_usage"]
+MARKER = REPO / "_templates/drive/factory/release.txt"     # only in repos whose drive template carries the version
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from scan import Refused, load_denylist, scan, scan_text  # noqa: E402,F401  (the same scan in every client repo)
+from scan import Refused, load_denylist, scan, scan_text  # noqa: E402,F401
 
 
 def git(*args: str) -> str:
@@ -63,22 +60,28 @@ def main() -> None:
             raise Refused("--note is needed")
         if git("status", "--porcelain").strip():
             raise Refused("Commit your edits first: the working tree isn't clean.")
-        for t in TESTS:
-            p = subprocess.run([sys.executable, "-B", str(REPO / "tools/tests" / f"{t}.py")], capture_output=True, text=True)
+        tests = sorted((REPO / "tools/tests").glob("test_*.py"))
+        if not tests:
+            raise Refused("No tests in tools/tests/: a repo with no tests isn't released.")
+        for t in tests:
+            p = subprocess.run([sys.executable, "-B", str(t)], capture_output=True, text=True)
             if p.returncode:
-                raise Refused(f"{t} failed:\n{p.stdout[-800:]}{p.stderr[-800:]}")
+                raise Refused(f"{t.name} failed:\n{p.stdout[-800:]}{p.stderr[-800:]}")
         text = VERSION.read_text()
         new = bump(re.search(r"^version: (.*)$", text, re.M).group(1).strip(), a.bump)
         if a.dry_run:
-            print(f"Dry run: tests pass; would release {new}.")
+            print(f"Dry run: {len(tests)} test file(s) pass; would release {new}.")
             return
         VERSION.write_text(bumped_version_file(text, new, dt.date.today().isoformat(), a.note))
-        TEMPLATE.write_text(re.sub(r"^version: .*$", f"version: {new}", TEMPLATE.read_text(), count=1, flags=re.M))
-        git("add", str(VERSION), str(TEMPLATE))
+        changed = [str(VERSION)]
+        if MARKER.exists():
+            MARKER.write_text(re.sub(r"^version: .*$", f"version: {new}", MARKER.read_text(), count=1, flags=re.M))
+            changed.append(str(MARKER))
+        git("add", *changed)
         git("commit", "-m", f"Release v{new}: {a.note}")
         git("tag", "-a", f"v{new}", "-m", f"Release v{new}: {a.note}")
         git("push", "origin", "HEAD", f"v{new}")
-        print(f"Released {new}. Now tell the head coach's Claude: \"version {new} is out\".")
+        print(f"Released {new}, tagged v{new}. Now tell the client: README.md § Changing the live system.")
     except Refused as e:
         print(f"Refused: {e}")
         sys.exit(1)
