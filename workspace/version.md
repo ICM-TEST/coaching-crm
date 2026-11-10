@@ -1,6 +1,6 @@
 ---
-version: 0.3.3
-released: 2026-11-09
+version: 0.4.0
+released: 2026-11-10
 ---
 
 # Structure version
@@ -26,3 +26,4 @@ Then carry on normally. Never refuse work because the snapshot is behind. If the
 - 0.3.1 (2026-11-09): Only the Project instruction and the drive say who Claude works for
 - 0.3.2 (2026-11-09): Rand by default; work quietly; Error 500 for anything outside the system
 - 0.3.3 (2026-11-09): Setup offers to create the business folder
+- 0.4.0 (2026-11-10): Lower usage, tighter lock, tagged releases
